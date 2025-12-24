@@ -187,51 +187,27 @@ func main() {
 		"smaz_cespare":         smaz.Compress,
 		"smaz_cespare_Jorropo": compressorOnlyTextMessageAppContent(smaz.Compress),
 		"shoco_WordsEn_tmthrgd": func(data []byte) []byte {
-			return shoco_models.WordsEn().Compress(data)
-		},
-		"shoco_WordsEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
-			return shoco_models.WordsEn().Compress(data)
-		}),
-		"shoco_WordsEn_proposed_tmthrgd": func(data []byte) []byte {
 			return shoco_models.WordsEn().ProposedCompress(data)
 		},
-		"shoco_WordsEn_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+		"shoco_WordsEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.WordsEn().ProposedCompress(data)
 		}),
 		"shoco_TextEn_tmthrgd": func(data []byte) []byte {
-			return shoco_models.TextEn().Compress(data)
-		},
-		"shoco_TextEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
-			return shoco_models.TextEn().Compress(data)
-		}),
-		"shoco_TextEn_proposed_tmthrgd": func(data []byte) []byte {
 			return shoco_models.TextEn().ProposedCompress(data)
 		},
-		"shoco_TextEn_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+		"shoco_TextEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.TextEn().ProposedCompress(data)
 		}),
 		"shoco_FilePath_tmthrgd": func(data []byte) []byte {
-			return shoco_models.FilePath().Compress(data)
-		},
-		"shoco_FilePath_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
-			return shoco_models.FilePath().Compress(data)
-		}),
-		"shoco_FilePath_proposed_tmthrgd": func(data []byte) []byte {
 			return shoco_models.FilePath().ProposedCompress(data)
 		},
-		"shoco_FilePath_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+		"shoco_FilePath_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.FilePath().ProposedCompress(data)
 		}),
 		"shoco_Emails_tmthrgd": func(data []byte) []byte {
-			return shoco_models.Emails().Compress(data)
-		},
-		"shoco_Emails_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
-			return shoco_models.Emails().Compress(data)
-		}),
-		"shoco_Emails_proposed_tmthrgd": func(data []byte) []byte {
 			return shoco_models.Emails().ProposedCompress(data)
 		},
-		"shoco_Emails_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+		"shoco_Emails_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.Emails().ProposedCompress(data)
 		}),
 	}
@@ -254,11 +230,11 @@ func main() {
 						count++
 					}
 					if useShoco_WordsEn == 1 {
-						name += "_shoco_WordsEn_proposed"
+						name += "_shoco_WordsEn"
 						count++
 					}
 					if useShoco_TextEn == 1 {
-						name += "_shoco_TextEn_proposed"
+						name += "_shoco_TextEn"
 						count++
 					}
 					if count <= 1 {
