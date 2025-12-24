@@ -266,6 +266,9 @@ func compressorOnlyTextMessageAppContent(comp compressor) compressor {
 		}
 
 		compressedPayload := comp(payload)
+		if len(compressedPayload) >= len(payload) {
+			return data // no compression gain
+		}
 
 		// rebuild the message with the compressed payload
 		var result []byte
