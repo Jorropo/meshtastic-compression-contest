@@ -35,6 +35,8 @@ import (
 	"github.com/klauspost/compress/snappy"
 	klauspost_zlib "github.com/klauspost/compress/zlib"
 	"github.com/klauspost/compress/zstd"
+
+	"github.com/Jorropo/meshtastic-compression-contest/unishox2"
 )
 
 const zeroRatio = 2
@@ -134,6 +136,13 @@ func main() {
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
+		},
+		"unishox2_meshtastic": func(data []byte) []byte {
+			result, err := unishox2.CompressSimple(data)
+			if err != nil {
+				log.Fatalf("Compressing with unishox2: %v", err)
+			}
+			return result
 		},
 	}
 
