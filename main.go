@@ -12,7 +12,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"math/rand/v2"
 	"os"
@@ -365,96 +364,93 @@ func countRows(tableName string, db *sql.DB) uint {
 const datasetName = "packets.bin"
 const tryLimit = 10000
 
+var cachedDataset []byte
+var loadDatasetOnce sync.Once
+
 func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg float64) {
-retry:
-	{
-		datasetFile, err := os.Open(datasetName)
-		if err != nil {
-			if errors.Is(err, os.ErrNotExist) {
-				log.Printf("Dataset %s not found, generating...", datasetName)
-				err = generateDatasetBin(datasetName)
-				if err != nil {
-					log.Fatalf("Generating dataset: %v", err)
-				}
-				goto retry
-			}
-			log.Fatalf("Opening dataset: %v", err)
-		}
-		defer datasetFile.Close()
-		dataset := bufio.NewReader(datasetFile)
-
-		start := time.Now()
-		var totalRows uint64
-		err = binary.Read(dataset, binary.LittleEndian, &totalRows)
-		if err != nil {
-			log.Fatalf("Reading total rows from dataset: %v", err)
-		}
-
-		var sumCompressed uint64
-		tasks := make(chan []byte)
-		var wg sync.WaitGroup
-		cores := runtime.GOMAXPROCS(0)
-		wg.Add(cores)
-		for range cores {
-			go func() {
-				defer wg.Done()
-				for payload := range tasks {
-					compressed := comp(payload)
-
-					compressionRatio := float64(len(compressed)) / float64(len(payload))
-					bucket := int(compressionRatio * float64(len(buckets)) / zeroRatio)
-					if bucket < 0 {
-						bucket = 0
-					}
-					if bucket >= len(buckets) {
-						bucket = len(buckets) - 1
-					}
-					atomic.AddUint64(&buckets[bucket], 1)
-					atomic.AddUint64(&sumCompressed, uint64(len(compressed)))
-				}
-			}()
-		}
-
-		var done, sumUncompressed uint64
-		for range totalRows {
-			length, err := dataset.ReadByte()
+	loadDatasetOnce.Do(func() {
+	retry:
+		{
+			var err error
+			cachedDataset, err = os.ReadFile(datasetName)
 			if err != nil {
-				log.Fatalf("Reading length: %s", err)
-			}
-
-			payload := make([]byte, length)
-			_, err = io.ReadFull(dataset, payload)
-			if err != nil {
-				log.Fatalf("Reading payload: %s", err)
-			}
-
-			if onlyTextMessageApp {
-				portnum, _, _, _, ok := extractPortnumAndPayloadFromDecoded(payload)
-				if !ok {
-					panic("unreachable")
+				if errors.Is(err, os.ErrNotExist) {
+					log.Printf("Dataset %s not found, generating...", datasetName)
+					err = generateDatasetBin(datasetName)
+					if err != nil {
+						log.Fatalf("Generating dataset: %v", err)
+					}
+					goto retry
 				}
-				if portnum != TEXT_MESSAGE_APP {
-					continue
-				}
-			}
-
-			tasks <- payload
-			sumUncompressed += uint64(len(payload))
-
-			done++
-			if done%1000 == 0 {
-				elapsed := time.Since(start)
-				remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
-				log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
-					done, totalRows, float64(done)/float64(totalRows)*100,
-					elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
+				log.Fatalf("Opening dataset: %v", err)
 			}
 		}
-		close(tasks)
-		wg.Wait()
-		avg = float64(sumCompressed) / float64(sumUncompressed)
-		return
+	})
+	dataset := cachedDataset
+
+	start := time.Now()
+	totalRows := binary.LittleEndian.Uint64(dataset[:8])
+	dataset = dataset[8:]
+
+	var sumCompressed uint64
+	tasks := make(chan []byte)
+	var wg sync.WaitGroup
+	cores := runtime.GOMAXPROCS(0)
+	wg.Add(cores)
+	for range cores {
+		go func() {
+			defer wg.Done()
+			for payload := range tasks {
+				compressed := comp(payload)
+
+				compressionRatio := float64(len(compressed)) / float64(len(payload))
+				bucket := int(compressionRatio * float64(len(buckets)) / zeroRatio)
+				if bucket < 0 {
+					bucket = 0
+				}
+				if bucket >= len(buckets) {
+					bucket = len(buckets) - 1
+				}
+				atomic.AddUint64(&buckets[bucket], 1)
+				atomic.AddUint64(&sumCompressed, uint64(len(compressed)))
+			}
+		}()
 	}
+
+	var done, sumUncompressed uint64
+	for range totalRows {
+		length := dataset[0]
+		dataset = dataset[1:]
+
+		payload := dataset[:length]
+		dataset = dataset[length:]
+
+		if onlyTextMessageApp {
+			portnum, _, _, _, ok := extractPortnumAndPayloadFromDecoded(payload)
+			if !ok {
+				panic("unreachable")
+			}
+			if portnum != TEXT_MESSAGE_APP {
+				continue
+			}
+		}
+
+		tasks <- payload
+		sumUncompressed += uint64(len(payload))
+
+		done++
+		if done%1000 == 0 {
+			elapsed := time.Since(start)
+			remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
+			log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
+				done, totalRows, float64(done)/float64(totalRows)*100,
+				elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
+		}
+	}
+	close(tasks)
+	wg.Wait()
+	avg = float64(sumCompressed) / float64(sumUncompressed)
+	return
 }
 
 func generateDatasetBin(filename string) error {
