@@ -9,32 +9,32 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------------------------------|--------------------------------------|
-| `unishox2_meshtastic` | 0.7578 | 0.9983 |
-| `shoco_TextEn_tmthrgd_Jorropo` | 0.7722 | 0.9988 |
-| `smaz_cespare_Jorropo` | 0.7965 | 0.9990 |
-| `shoco_WordsEn_tmthrgd_Jorropo` | 0.8388 | 0.9991 |
-| `shoco_TextEn_tmthrgd` | 0.8575 | 1.1715 |
-| `shoco_FilePath_tmthrgd_Jorropo` | 0.8661 | 0.9993 |
-| `shoco_Emails_tmthrgd_Jorropo` | 0.8755 | 0.9994 |
-| `smaz_cespare` | 0.8865 | 1.2514 |
-| `shoco_WordsEn_tmthrgd` | 0.9241 | 1.1736 |
-| `shoco_FilePath_tmthrgd` | 0.9516 | 1.1758 |
-| `shoco_Emails_tmthrgd` | 0.9608 | 1.1755 |
+| `unishox2_meshtastic` | 0.7553 | 0.9986 |
+| `shoco_TextEn_tmthrgd_Jorropo` | 0.7606 | 0.9987 |
+| `smaz_cespare_Jorropo` | 0.7998 | 0.9989 |
+| `shoco_WordsEn_tmthrgd_Jorropo` | 0.8351 | 0.9991 |
+| `shoco_TextEn_tmthrgd` | 0.8419 | 1.1694 |
+| `shoco_FilePath_tmthrgd_Jorropo` | 0.8678 | 0.9993 |
+| `shoco_Emails_tmthrgd_Jorropo` | 0.8750 | 0.9993 |
+| `smaz_cespare` | 0.8807 | 1.2517 |
+| `shoco_WordsEn_tmthrgd` | 0.9160 | 1.1705 |
+| `shoco_FilePath_tmthrgd` | 0.9487 | 1.1728 |
+| `shoco_Emails_tmthrgd` | 0.9559 | 1.1718 |
 | `noop` | 1.0000 | 1.0000 |
-| `lz4_cloudflareHC` | 1.0429 | 1.0325 |
-| `lz4_cloudflare` | 1.0434 | 1.0330 |
-| `flate_klauspost` | 1.0595 | 1.0642 |
-| `rle_inkyblackness` | 1.1225 | 1.0859 |
-| `lzw_std` | 1.1330 | 1.1473 |
-| `flate_std` | 1.1595 | 1.1264 |
-| `zstd_klauspost` | 1.2531 | 1.1776 |
-| `zlib_klauspost` | 1.2543 | 1.1852 |
-| `zlib_std` | 1.3544 | 1.2475 |
-| `lz4_pierrec` | 1.4766 | 1.2995 |
-| `s2_klauspost` | 1.5730 | 1.3596 |
-| `snappy_klauspost` | 1.5775 | 1.3613 |
-| `gzip_klauspost` | 1.6440 | 1.4273 |
-| `gzip_std` | 1.7440 | 1.4896 |
+| `lz4_cloudflareHC` | 1.0369 | 1.0340 |
+| `lz4_cloudflare` | 1.0376 | 1.0344 |
+| `flate_klauspost` | 1.0388 | 1.0660 |
+| `lzw_std` | 1.1071 | 1.1484 |
+| `rle_inkyblackness` | 1.1098 | 1.0849 |
+| `flate_std` | 1.1273 | 1.1292 |
+| `zstd_klauspost` | 1.2116 | 1.1833 |
+| `zlib_klauspost` | 1.2120 | 1.1903 |
+| `zlib_std` | 1.3005 | 1.2535 |
+| `lz4_pierrec` | 1.4229 | 1.3083 |
+| `s2_klauspost` | 1.5068 | 1.3701 |
+| `snappy_klauspost` | 1.5118 | 1.3722 |
+| `gzip_klauspost` | 1.5585 | 1.4390 |
+| `gzip_std` | 1.6470 | 1.5022 |
 ## CDF Graphs
 
 The following graphs show the cumulative distribution function (CDF) of the reciprocal compression ratios for each compressor.
@@ -129,17 +129,17 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![flate_klauspost only TEXT_MESSAGE_APP CDF](graphs/flate_klauspost_only_TEXT_MESSAGE_APP_cdf.png)
 
-### `rle_inkyblackness`
-
-![rle_inkyblackness CDF](graphs/rle_inkyblackness_cdf.png)
-
-![rle_inkyblackness only TEXT_MESSAGE_APP CDF](graphs/rle_inkyblackness_only_TEXT_MESSAGE_APP_cdf.png)
-
 ### `lzw_std`
 
 ![lzw_std CDF](graphs/lzw_std_cdf.png)
 
 ![lzw_std only TEXT_MESSAGE_APP CDF](graphs/lzw_std_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `rle_inkyblackness`
+
+![rle_inkyblackness CDF](graphs/rle_inkyblackness_cdf.png)
+
+![rle_inkyblackness only TEXT_MESSAGE_APP CDF](graphs/rle_inkyblackness_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `flate_std`
 

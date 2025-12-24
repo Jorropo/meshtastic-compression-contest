@@ -14,9 +14,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand/v2"
 	"os"
 	"runtime"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -442,13 +444,10 @@ retry:
 			done++
 			if done%1000 == 0 {
 				elapsed := time.Since(start)
-				remaining := time.Duration(float64(elapsed) / float64(done) * float64(tryLimit-done))
+				remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
 				log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
-					done, tryLimit, float64(done)/float64(tryLimit)*100,
+					done, totalRows, float64(done)/float64(totalRows)*100,
 					elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
-			}
-			if done > tryLimit {
-				break
 			}
 		}
 		close(tasks)
@@ -488,8 +487,12 @@ func generateDatasetBin(filename string) error {
 		return fmt.Errorf("writing placeholder to file: %w", err)
 	}
 
+	var seed [32]byte
+	copy(seed[:], "Jorropo")
+	rng := rand.New(rand.NewChaCha8(seed))
+
 	var totalEntries uint64
-	var done uint
+	var done, trainPackets, trainTextMessage uint
 	for rows.Next() {
 		done++
 		if done%50000 == 0 {
@@ -511,16 +514,71 @@ func generateDatasetBin(filename string) error {
 			continue
 		}
 
-		err = w.WriteByte(byte(len(data)))
-		if err != nil {
-			return fmt.Errorf("writing entry length to file: %w", err)
-		}
+		roll := rng.UintN(totalRows)
+		// randomly pick messages for training or benchmark set
+		if roll < tryLimit {
+			err = w.WriteByte(byte(len(data)))
+			if err != nil {
+				return fmt.Errorf("writing entry length to file: %w", err)
+			}
 
-		_, err = w.Write(data)
-		if err != nil {
-			return fmt.Errorf("writing entry to file: %w", err)
+			_, err = w.Write(data)
+			if err != nil {
+				return fmt.Errorf("writing entry to file: %w", err)
+			}
+			totalEntries++
+		} else {
+		storeTrainingPacket:
+			{
+				f, err := os.OpenFile("train/packets/"+strconv.FormatUint(uint64(trainPackets), 36), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0622)
+				if err != nil {
+					if errors.Is(err, os.ErrNotExist) {
+						err = os.MkdirAll("train/packets", 0755)
+						if err != nil {
+							return fmt.Errorf("creating train/packets directory: %w", err)
+						}
+						goto storeTrainingPacket
+					}
+					return fmt.Errorf("creating individual packet file: %w", err)
+				}
+				_, err = f.Write(data)
+				if err != nil {
+					return fmt.Errorf("writing individual packet file: %w", err)
+				}
+				err = f.Close()
+				if err != nil {
+					return fmt.Errorf("closing individual packet file: %w", err)
+				}
+				trainPackets++
+			}
+
+		storePortnumAndPayloadTraining:
+			{
+				portnum, _, payload, _, ok := extractPortnumAndPayloadFromDecoded(data)
+				if ok {
+					f, err := os.OpenFile("train/"+strconv.FormatUint(uint64(portnum), 10)+"/"+strconv.FormatUint(uint64(trainTextMessage), 36), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0622)
+					if err != nil {
+						if errors.Is(err, os.ErrNotExist) {
+							err = os.MkdirAll("train/"+strconv.FormatUint(uint64(portnum), 10), 0755)
+							if err != nil {
+								return fmt.Errorf("creating train/packets directory: %w", err)
+							}
+							goto storePortnumAndPayloadTraining
+						}
+						return fmt.Errorf("creating individual text message file: %w", err)
+					}
+					_, err = f.Write(payload)
+					if err != nil {
+						return fmt.Errorf("writing individual text message file: %w", err)
+					}
+					err = f.Close()
+					if err != nil {
+						return fmt.Errorf("closing individual text message file: %w", err)
+					}
+				}
+				trainTextMessage++
+			}
 		}
-		totalEntries++
 	}
 	err = w.Flush()
 	if err != nil {
