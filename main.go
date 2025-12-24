@@ -432,7 +432,7 @@ func countRows(tableName string, db *sql.DB) uint {
 }
 
 const datasetName = "packets.bin"
-const tryLimit = 10000
+const tryLimit = 1000
 
 var cachedDataset []byte
 var loadDatasetOnce sync.Once
@@ -509,7 +509,7 @@ func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg f
 		sumUncompressed += uint64(len(payload))
 
 		done++
-		if done%1000 == 0 {
+		if done%100 == 0 {
 			elapsed := time.Since(start)
 			remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
 			log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
