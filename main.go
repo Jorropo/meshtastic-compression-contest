@@ -3,7 +3,10 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"compress/flate"
 	"compress/gzip"
+	"compress/lzw"
+	"compress/zlib"
 	"database/sql"
 	"encoding/binary"
 	"errors"
@@ -26,7 +29,11 @@ import (
 
 	"golang.org/x/sys/unix"
 
+	klauspost_flate "github.com/klauspost/compress/flate"
 	klauspost_gzip "github.com/klauspost/compress/gzip"
+	"github.com/klauspost/compress/s2"
+	"github.com/klauspost/compress/snappy"
+	klauspost_zlib "github.com/klauspost/compress/zlib"
 	"github.com/klauspost/compress/zstd"
 )
 
@@ -37,7 +44,7 @@ type compressor = func([]byte) []byte
 func main() {
 	compressors := map[string]compressor{
 		"noop": func(data []byte) []byte { return data },
-		"gzip_std_best_compression": func(data []byte) []byte {
+		"gzip_std": func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := gzip.NewWriterLevel(&b, gzip.BestCompression)
 			if err != nil {
@@ -47,7 +54,7 @@ func main() {
 			w.Close()
 			return b.Bytes()
 		},
-		"gzip_klauspost_compression": func(data []byte) []byte {
+		"gzip_klauspost": func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := klauspost_gzip.NewWriterLevel(&b, klauspost_gzip.BestCompression)
 			if err != nil {
@@ -57,12 +64,73 @@ func main() {
 			w.Close()
 			return b.Bytes()
 		},
-		"zstd_best_compression": func(data []byte) []byte {
+		"flate_std": func(data []byte) []byte {
+			var b bytes.Buffer
+			w, err := flate.NewWriter(&b, flate.BestCompression)
+			if err != nil {
+				log.Fatalf("Creating flate writer: %v", err)
+			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"flate_klauspost": func(data []byte) []byte {
+			var b bytes.Buffer
+			w, err := klauspost_flate.NewWriter(&b, klauspost_flate.BestCompression)
+			if err != nil {
+				log.Fatalf("Creating flate writer: %v", err)
+			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"zlib_std": func(data []byte) []byte {
+			var b bytes.Buffer
+			w, err := zlib.NewWriterLevel(&b, zlib.BestCompression)
+			if err != nil {
+				log.Fatalf("Creating zlib writer: %v", err)
+			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"zlib_klauspost": func(data []byte) []byte {
+			var b bytes.Buffer
+			w, err := klauspost_zlib.NewWriterLevel(&b, klauspost_zlib.BestCompression)
+			if err != nil {
+				log.Fatalf("Creating zlib writer: %v", err)
+			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"lzw_std": func(data []byte) []byte {
+			var b bytes.Buffer
+			w := lzw.NewWriter(&b, lzw.LSB, 8)
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"zstd_klauspost": func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := zstd.NewWriter(&b, zstd.WithEncoderCRC(false), zstd.WithEncoderLevel(zstd.SpeedBestCompression))
 			if err != nil {
 				log.Fatalf("Creating zstd writer: %v", err)
 			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"s2_klauspost": func(data []byte) []byte {
+			var b bytes.Buffer
+			w := s2.NewWriter(&b, s2.WriterBestCompression(), s2.WriterConcurrency(1))
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"snappy_klauspost": func(data []byte) []byte {
+			var b bytes.Buffer
+			w := snappy.NewBufferedWriter(&b)
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
@@ -77,6 +145,7 @@ func main() {
 }
 
 func testAndWrite(name string, comp compressor) error {
+	log.Printf("Testing compressor: %s", name)
 	results := test(comp)
 
 	cdf := results
