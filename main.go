@@ -141,11 +141,12 @@ func main() {
 		},
 		"unishox2_meshtastic": func(data []byte) []byte {
 			// copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
-			before, payload, after, ok, erro := extractPayloadFromDecoded(data)
+			portnum, before, payload, after, ok, erro := extractPortnumAndPayloadFromDecoded(data)
 			if erro {
 				panic("unreachable")
 			}
-			if !ok {
+			const TEXT_MESSAGE_APP = 1
+			if !ok || portnum != TEXT_MESSAGE_APP {
 				return data // no payload field; no compression to be done
 			}
 
@@ -491,7 +492,7 @@ func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
 			return nil, false
 		}
 
-		_, _, _, _, erro := extractPayloadFromDecoded(data)
+		_, _, _, _, _, erro := extractPortnumAndPayloadFromDecoded(data)
 		if erro {
 			return nil, false
 		}
@@ -500,33 +501,46 @@ func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
 	}
 }
 
-func extractPayloadFromDecoded(data []byte) (before, payload, after []byte, found, error bool) {
-	// extract the payload (2) field
+func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, payload, after []byte, found, error bool) {
 	msg := data
 	for len(msg) > 0 {
 		num, typ, n := protowire.ConsumeTag(msg)
 		if n < 0 {
-			return nil, nil, nil, false, true
+			return 0, nil, nil, nil, false, true
 		}
-		if num == 2 {
+		switch num {
+		case 1: // portnum
+			if typ != protowire.VarintType {
+				return 0, nil, nil, nil, false, true
+			}
+			portnum, n = protowire.ConsumeVarint(msg)
+			if n < 0 {
+				return 0, nil, nil, nil, false, true
+			}
+			if payload != nil {
+				return portnum, before, payload, after, true, false
+			}
+		case 2: // payload
 			if typ != protowire.BytesType {
-				return nil, nil, nil, false, true
+				return 0, nil, nil, nil, false, true
 			}
 			before = data[:len(data)-len(msg)]
 			msg = msg[n:]
 			payload, n = protowire.ConsumeBytes(msg)
 			if n < 0 {
-				return nil, nil, nil, false, true
+				return 0, nil, nil, nil, false, true
 			}
 			after = msg[n:]
-			return before, payload, after, true, false
+			if portnum != 0 {
+				return portnum, before, payload, after, true, false
+			}
 		}
 		msg = msg[n:]
 		n = protowire.ConsumeFieldValue(num, typ, msg)
 		if n < 0 {
-			return nil, nil, nil, false, true
+			return 0, nil, nil, nil, false, true
 		}
 		msg = msg[n:]
 	}
-	return nil, nil, nil, false, false
+	return 0, nil, nil, nil, false, false
 }
