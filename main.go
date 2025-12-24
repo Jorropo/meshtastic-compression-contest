@@ -125,16 +125,8 @@ func main() {
 			w.Close()
 			return b.Bytes()
 		},
-		"zstd_klauspost": func(data []byte) []byte {
-			var b bytes.Buffer
-			w, err := zstd.NewWriter(&b, zstd.WithEncoderCRC(false), zstd.WithEncoderLevel(zstd.SpeedBestCompression), zstd.WithEncoderConcurrency(1))
-			if err != nil {
-				log.Fatalf("Creating zstd writer: %v", err)
-			}
-			w.Write(data)
-			w.Close()
-			return b.Bytes()
-		},
+		"zstd_klauspost":                 zstdCompressor(nil),
+		"zstd_klauspost_chopped_Jorropo": makeChoppedHeaderZstd(zstdCompressor(nil)),
 		"s2_klauspost": func(data []byte) []byte {
 			var b bytes.Buffer
 			w := s2.NewWriter(&b, s2.WriterBestCompression(), s2.WriterConcurrency(1))
@@ -225,7 +217,6 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			name := fmt.Sprintf("zstd_klauspost=dict_%d_brute", i)
 			dictPath := "dictionaries/" + strconv.FormatUint(uint64(i), 10) + "_brute.zstddict"
 		retry:
 			{
@@ -244,18 +235,12 @@ func main() {
 					}
 					log.Fatalf("Opening zstd dictionary: %v", err)
 				}
+				name := fmt.Sprintf("zstd_klauspost=dict_%d_brute", i)
+				nameChopped := fmt.Sprintf("zstd_klauspost_chopped_Jorropo=dict_%d_brute", i)
 				compressorsMu.Lock()
 				defer compressorsMu.Unlock()
-				compressors[name] = func(data []byte) []byte {
-					var b bytes.Buffer
-					w, err := zstd.NewWriter(&b, zstd.WithEncoderDict(dictionary), zstd.WithEncoderCRC(false), zstd.WithEncoderLevel(zstd.SpeedBestCompression), zstd.WithEncoderConcurrency(1))
-					if err != nil {
-						log.Fatalf("Creating zstd writer: %v", err)
-					}
-					w.Write(data)
-					w.Close()
-					return b.Bytes()
-				}
+				compressors[name] = zstdCompressor(dictionary)
+				compressors[nameChopped] = makeChoppedHeaderZstd(zstdCompressor(dictionary))
 			}
 		}()
 	}
@@ -348,6 +333,47 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 	if _, err := README.WriteTo(f); err != nil {
 		log.Fatalf("Error writing to README.md: %v", err)
+	}
+}
+
+func zstdCompressor(dictionary []byte) compressor {
+	return func(data []byte) []byte {
+		var b bytes.Buffer
+		opts := []zstd.EOption{
+			zstd.WithEncoderCRC(false),
+			zstd.WithEncoderLevel(zstd.SpeedBestCompression),
+			zstd.WithEncoderConcurrency(1),
+		}
+		if dictionary != nil {
+			opts = append(opts, zstd.WithEncoderDict(dictionary))
+		}
+		w, err := zstd.NewWriter(&b, opts...)
+		if err != nil {
+			log.Fatalf("Creating zstd writer: %v", err)
+		}
+		w.Write(data)
+		w.Close()
+		return b.Bytes()
+	}
+}
+
+// this makes a custom zstd format we can reconstruct while lightening the headers and supporting a low overhead non-compressed mode
+func makeChoppedHeaderZstd(comp compressor) compressor {
+	return func(data []byte) []byte {
+		compressed := comp(data)
+		if string(compressed[:4]) != "\x28\xb5\x2f\xfd" {
+			panic("missing zstd magic number")
+		}
+		compressed = compressed[4:] // chop off zstd magic number
+		if len(compressed) > len(data) {
+			compressed[0] = 0b00100000 // use a reserved bit of the Content checksum flag (which we always disable) to indicate uncompressed
+			copy(compressed[1:], data)
+			return compressed[:1+len(data)]
+		}
+		if compressed[0]&0b00100000 != 0 {
+			panic("reserved bit set")
+		}
+		return compressed
 	}
 }
 
