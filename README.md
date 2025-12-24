@@ -9,19 +9,8 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------------------------------|--------------------------------------|
-| `sscc_Jorropo_unishox2_smaz_shoco_WordsEn_shoco_TextEn` | 0.7382 | 0.9982 |
-| `sscc_Jorropo_unishox2_smaz_shoco_TextEn` | 0.7386 | 0.9982 |
-| `sscc_Jorropo_unishox2_shoco_WordsEn_shoco_TextEn` | 0.7426 | 0.9983 |
-| `sscc_Jorropo_unishox2_shoco_TextEn` | 0.7431 | 0.9983 |
-| `sscc_Jorropo_unishox2_smaz_shoco_WordsEn` | 0.7460 | 0.9983 |
-| `sscc_Jorropo_unishox2_smaz` | 0.7485 | 0.9983 |
-| `sscc_Jorropo_unishox2_shoco_WordsEn` | 0.7542 | 0.9983 |
 | `unishox2_meshtastic` | 0.7578 | 0.9983 |
-| `sscc_Jorropo_smaz_shoco_WordsEn_shoco_TextEn` | 0.7604 | 0.9987 |
-| `sscc_Jorropo_smaz_shoco_TextEn` | 0.7613 | 0.9987 |
-| `sscc_Jorropo_shoco_WordsEn_shoco_TextEn` | 0.7709 | 0.9988 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.7722 | 0.9988 |
-| `sscc_Jorropo_smaz_shoco_WordsEn` | 0.7816 | 0.9989 |
 | `smaz_cespare_Jorropo` | 0.7965 | 0.9990 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.8388 | 0.9991 |
 | `shoco_TextEn_tmthrgd` | 0.8575 | 1.1715 |
@@ -50,83 +39,17 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 The following graphs show the cumulative distribution function (CDF) of the reciprocal compression ratios for each compressor.
 
-### `sscc_Jorropo_unishox2_smaz_shoco_WordsEn_shoco_TextEn`
-
-![sscc_Jorropo_unishox2_smaz_shoco_WordsEn_shoco_TextEn CDF](graphs/sscc_Jorropo_unishox2_smaz_shoco_WordsEn_shoco_TextEn_cdf.png)
-
-![sscc_Jorropo_unishox2_smaz_shoco_WordsEn_shoco_TextEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_smaz_shoco_WordsEn_shoco_TextEn_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_unishox2_smaz_shoco_TextEn`
-
-![sscc_Jorropo_unishox2_smaz_shoco_TextEn CDF](graphs/sscc_Jorropo_unishox2_smaz_shoco_TextEn_cdf.png)
-
-![sscc_Jorropo_unishox2_smaz_shoco_TextEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_smaz_shoco_TextEn_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_unishox2_shoco_WordsEn_shoco_TextEn`
-
-![sscc_Jorropo_unishox2_shoco_WordsEn_shoco_TextEn CDF](graphs/sscc_Jorropo_unishox2_shoco_WordsEn_shoco_TextEn_cdf.png)
-
-![sscc_Jorropo_unishox2_shoco_WordsEn_shoco_TextEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_shoco_WordsEn_shoco_TextEn_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_unishox2_shoco_TextEn`
-
-![sscc_Jorropo_unishox2_shoco_TextEn CDF](graphs/sscc_Jorropo_unishox2_shoco_TextEn_cdf.png)
-
-![sscc_Jorropo_unishox2_shoco_TextEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_shoco_TextEn_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_unishox2_smaz_shoco_WordsEn`
-
-![sscc_Jorropo_unishox2_smaz_shoco_WordsEn CDF](graphs/sscc_Jorropo_unishox2_smaz_shoco_WordsEn_cdf.png)
-
-![sscc_Jorropo_unishox2_smaz_shoco_WordsEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_smaz_shoco_WordsEn_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_unishox2_smaz`
-
-![sscc_Jorropo_unishox2_smaz CDF](graphs/sscc_Jorropo_unishox2_smaz_cdf.png)
-
-![sscc_Jorropo_unishox2_smaz only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_smaz_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_unishox2_shoco_WordsEn`
-
-![sscc_Jorropo_unishox2_shoco_WordsEn CDF](graphs/sscc_Jorropo_unishox2_shoco_WordsEn_cdf.png)
-
-![sscc_Jorropo_unishox2_shoco_WordsEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_shoco_WordsEn_only_TEXT_MESSAGE_APP_cdf.png)
-
 ### `unishox2_meshtastic`
 
 ![unishox2_meshtastic CDF](graphs/unishox2_meshtastic_cdf.png)
 
 ![unishox2_meshtastic only TEXT_MESSAGE_APP CDF](graphs/unishox2_meshtastic_only_TEXT_MESSAGE_APP_cdf.png)
 
-### `sscc_Jorropo_smaz_shoco_WordsEn_shoco_TextEn`
-
-![sscc_Jorropo_smaz_shoco_WordsEn_shoco_TextEn CDF](graphs/sscc_Jorropo_smaz_shoco_WordsEn_shoco_TextEn_cdf.png)
-
-![sscc_Jorropo_smaz_shoco_WordsEn_shoco_TextEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_smaz_shoco_WordsEn_shoco_TextEn_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_smaz_shoco_TextEn`
-
-![sscc_Jorropo_smaz_shoco_TextEn CDF](graphs/sscc_Jorropo_smaz_shoco_TextEn_cdf.png)
-
-![sscc_Jorropo_smaz_shoco_TextEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_smaz_shoco_TextEn_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_shoco_WordsEn_shoco_TextEn`
-
-![sscc_Jorropo_shoco_WordsEn_shoco_TextEn CDF](graphs/sscc_Jorropo_shoco_WordsEn_shoco_TextEn_cdf.png)
-
-![sscc_Jorropo_shoco_WordsEn_shoco_TextEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_shoco_WordsEn_shoco_TextEn_only_TEXT_MESSAGE_APP_cdf.png)
-
 ### `shoco_TextEn_tmthrgd_Jorropo`
 
 ![shoco_TextEn_tmthrgd_Jorropo CDF](graphs/shoco_TextEn_tmthrgd_Jorropo_cdf.png)
 
 ![shoco_TextEn_tmthrgd_Jorropo only TEXT_MESSAGE_APP CDF](graphs/shoco_TextEn_tmthrgd_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_smaz_shoco_WordsEn`
-
-![sscc_Jorropo_smaz_shoco_WordsEn CDF](graphs/sscc_Jorropo_smaz_shoco_WordsEn_cdf.png)
-
-![sscc_Jorropo_smaz_shoco_WordsEn only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_smaz_shoco_WordsEn_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `smaz_cespare_Jorropo`
 
