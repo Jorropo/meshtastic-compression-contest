@@ -3,8 +3,10 @@ module github.com/Jorropo/meshtastic-compression-contest
 go 1.24.0
 
 require (
+	github.com/cloudflare/golz4 v0.0.0-20240916140612-caecf3c00c06
 	github.com/inkyblackness/res v0.0.0-20180728072643-e78e2ff1969d
 	github.com/klauspost/compress v1.18.2
+	github.com/pierrec/lz4/v4 v4.1.23
 	golang.org/x/sys v0.36.0
 	gonum.org/v1/plot v0.16.0
 	google.golang.org/protobuf v1.36.11

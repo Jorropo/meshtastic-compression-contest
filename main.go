@@ -32,6 +32,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
+	cloudflare_lz4 "github.com/cloudflare/golz4"
 	"github.com/inkyblackness/res/compress/rle"
 	klauspost_flate "github.com/klauspost/compress/flate"
 	klauspost_gzip "github.com/klauspost/compress/gzip"
@@ -39,6 +40,7 @@ import (
 	"github.com/klauspost/compress/snappy"
 	klauspost_zlib "github.com/klauspost/compress/zlib"
 	"github.com/klauspost/compress/zstd"
+	"github.com/pierrec/lz4/v4"
 
 	"github.com/Jorropo/meshtastic-compression-contest/unishox2"
 )
@@ -170,6 +172,30 @@ func main() {
 			var b bytes.Buffer
 			rle.Compress(&b, data)
 			return b.Bytes()
+		},
+		"lz4_pierrec": func(data []byte) []byte {
+			var b bytes.Buffer
+			w := lz4.NewWriter(&b)
+			w.Apply(lz4.BlockChecksumOption(false), lz4.ChecksumOption(false), lz4.CompressionLevelOption(lz4.Level9), lz4.ConcurrencyOption(1))
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"lz4_cloudflare": func(data []byte) []byte {
+			r := make([]byte, cloudflare_lz4.CompressBound(data))
+			n, err := cloudflare_lz4.Compress(data, r)
+			if err != nil {
+				panic(err)
+			}
+			return r[:n]
+		},
+		"lz4_cloudflareHC": func(data []byte) []byte {
+			r := make([]byte, cloudflare_lz4.CompressBound(data))
+			n, err := cloudflare_lz4.CompressHCLevel(data, r, 16)
+			if err != nil {
+				panic(err)
+			}
+			return r[:n]
 		},
 	}
 

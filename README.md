@@ -11,6 +11,8 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 |------------|--------------------------------------|-------------------------------------------------------------|
 | `unishox2_meshtastic` | 0.9984 | 0.7637 |
 | `noop` | 1.0000 | 1.0000 |
+| `lz4_cloudflareHC` | 1.0325 | 1.0429 |
+| `lz4_cloudflare` | 1.0330 | 1.0434 |
 | `flate_klauspost` | 1.0642 | 1.0595 |
 | `rle_inkyblackness` | 1.0859 | 1.1225 |
 | `flate_std` | 1.1264 | 1.1595 |
@@ -18,6 +20,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `zstd_klauspost` | 1.1776 | 1.2531 |
 | `zlib_klauspost` | 1.1852 | 1.2543 |
 | `zlib_std` | 1.2475 | 1.3544 |
+| `lz4_pierrec` | 1.2995 | 1.4766 |
 | `s2_klauspost` | 1.3596 | 1.5730 |
 | `snappy_klauspost` | 1.3613 | 1.5775 |
 | `gzip_klauspost` | 1.4273 | 1.6440 |
@@ -37,6 +40,18 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![noop CDF](graphs/noop_cdf.png)
 
 ![noop only TEXT_MESSAGE_APP CDF](graphs/noop_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `lz4_cloudflareHC`
+
+![lz4_cloudflareHC CDF](graphs/lz4_cloudflareHC_cdf.png)
+
+![lz4_cloudflareHC only TEXT_MESSAGE_APP CDF](graphs/lz4_cloudflareHC_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `lz4_cloudflare`
+
+![lz4_cloudflare CDF](graphs/lz4_cloudflare_cdf.png)
+
+![lz4_cloudflare only TEXT_MESSAGE_APP CDF](graphs/lz4_cloudflare_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `flate_klauspost`
 
@@ -79,6 +94,12 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![zlib_std CDF](graphs/zlib_std_cdf.png)
 
 ![zlib_std only TEXT_MESSAGE_APP CDF](graphs/zlib_std_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `lz4_pierrec`
+
+![lz4_pierrec CDF](graphs/lz4_pierrec_cdf.png)
+
+![lz4_pierrec only TEXT_MESSAGE_APP CDF](graphs/lz4_pierrec_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `s2_klauspost`
 
