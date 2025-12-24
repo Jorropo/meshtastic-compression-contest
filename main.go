@@ -182,10 +182,43 @@ func main() {
 		return cmp.Compare(a.avg, b.avg)
 	})
 
-	fmt.Println("| Compressor | Average Reciprocal Compression Ratio |")
-	fmt.Println("|------------|--------------------------------------|")
+	var README bytes.Buffer
+
+	README.WriteString(`# Meshtastic Compression Showdown
+
+This project contain benchmarks of various compression algorithms applied on a data of meshtastic packets.
+
+For context a Reciprocal Compression Ratio **above** 1 means the compressed data is **bigger** than the uncompressed data.
+One **bellow** 1 means the compressed data is **smaller** than the uncompressed data.
+
+## Results
+
+| Compressor | Average Reciprocal Compression Ratio |
+|------------|--------------------------------------|
+`)
+
 	for _, r := range results {
-		fmt.Printf("| %s | %.4f |\n", r.name, r.avg)
+		fmt.Fprintf(&README, "| `%s` | %.4f |\n", r.name, r.avg)
+	}
+
+	README.WriteString(`## CDF Graphs
+
+The following graphs show the cumulative distribution function (CDF) of the reciprocal compression ratios for each compressor.
+
+`)
+
+	for _, r := range results {
+		fmt.Fprintf(&README, "### `%s` %.4f\n\n![%s CDF](graphs/%s_cdf.png)\n\n", r.name, r.avg, r.name, r.name)
+	}
+
+	f, err := os.OpenFile("README.md", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		log.Fatalf("Error opening README.md: %v", err)
+	}
+	defer f.Close()
+
+	if _, err := README.WriteTo(f); err != nil {
+		log.Fatalf("Error writing to README.md: %v", err)
 	}
 }
 
@@ -229,7 +262,7 @@ func testAndWrite(name string, comp compressor) (avg float64, err error) {
 	}
 	p.Add(line)
 
-	if err := p.Save(6*vg.Inch, 4*vg.Inch, name+"_cdf.png"); err != nil {
+	if err := p.Save(6*vg.Inch, 4*vg.Inch, "graphs/"+name+"_cdf.png"); err != nil {
 		return 0, fmt.Errorf("saving plot: %w", err)
 	}
 	return avg, nil
