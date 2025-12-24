@@ -9,7 +9,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
-| `unishox2_meshtastic` | 1.0000 |
+| `unishox2_meshtastic` | 0.9983 |
 | `noop` | 1.0000 |
 | `flate_klauspost` | 1.0647 |
 | `flate_std` | 1.1275 |
@@ -25,7 +25,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 The following graphs show the cumulative distribution function (CDF) of the reciprocal compression ratios for each compressor.
 
-### `unishox2_meshtastic` 1.0000
+### `unishox2_meshtastic` 0.9983
 
 ![unishox2_meshtastic CDF](graphs/unishox2_meshtastic_cdf.png)
 

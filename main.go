@@ -508,6 +508,8 @@ func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, p
 		if n < 0 {
 			return 0, nil, nil, nil, false, true
 		}
+		msgBeforeConsumeTag := msg
+		msg = msg[n:]
 		switch num {
 		case 1: // portnum
 			if typ != protowire.VarintType {
@@ -517,6 +519,7 @@ func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, p
 			if n < 0 {
 				return 0, nil, nil, nil, false, true
 			}
+			msg = msg[n:]
 			if payload != nil {
 				return portnum, before, payload, after, true, false
 			}
@@ -524,8 +527,7 @@ func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, p
 			if typ != protowire.BytesType {
 				return 0, nil, nil, nil, false, true
 			}
-			before = data[:len(data)-len(msg)]
-			msg = msg[n:]
+			before = data[:len(data)-len(msgBeforeConsumeTag)]
 			payload, n = protowire.ConsumeBytes(msg)
 			if n < 0 {
 				return 0, nil, nil, nil, false, true
@@ -534,13 +536,13 @@ func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, p
 			if portnum != 0 {
 				return portnum, before, payload, after, true, false
 			}
+		default:
+			n = protowire.ConsumeFieldValue(num, typ, msg)
+			if n < 0 {
+				return 0, nil, nil, nil, false, true
+			}
+			msg = msg[n:]
 		}
-		msg = msg[n:]
-		n = protowire.ConsumeFieldValue(num, typ, msg)
-		if n < 0 {
-			return 0, nil, nil, nil, false, true
-		}
-		msg = msg[n:]
 	}
 	return 0, nil, nil, nil, false, false
 }
