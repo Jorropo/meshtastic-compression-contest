@@ -5,6 +5,9 @@ import (
 	"compress/gzip"
 	"database/sql"
 	"log"
+	"runtime"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -36,7 +39,7 @@ func main() {
 	})
 
 	cdf := results
-	var sum uint
+	var sum uint64
 	for i, count := range results {
 		sum += count
 		cdf[i] = sum
@@ -85,9 +88,39 @@ func countRows(tableName string, db *sql.DB) uint {
 	return count
 }
 
-func test(db *sql.DB, comp compressor) (buckets [1024]uint) {
+func test(db *sql.DB, comp compressor) (buckets [1024]uint64) {
 	start := time.Now()
 	totalRows := countRows("packet", db)
+
+	tasks := make(chan []byte)
+	var wg sync.WaitGroup
+	cores := runtime.GOMAXPROCS(0)
+	wg.Add(cores)
+	for range cores {
+		go func() {
+			defer wg.Done()
+			for payload := range tasks {
+				data, ok := extractLoraPayloadFromMessage(payload)
+				if !ok || len(data) == 0 {
+					continue
+				}
+
+				compressed := comp(data)
+
+				compressionRatio := float64(len(compressed)) / float64(len(data))
+				bucket := int(compressionRatio * float64(len(buckets)) / zeroRatio)
+				if bucket < 0 {
+					bucket = 0
+				}
+				if bucket >= len(buckets) {
+					bucket = len(buckets) - 1
+				}
+				atomic.AddUint64(&buckets[bucket], 1)
+			}
+		}()
+	}
+	defer wg.Wait()
+	defer close(tasks)
 
 	rows, err := db.Query(`SELECT payload FROM packet`)
 	if err != nil {
@@ -95,7 +128,6 @@ func test(db *sql.DB, comp compressor) (buckets [1024]uint) {
 	}
 	defer rows.Close()
 
-	var payload []byte
 	var done uint
 	for rows.Next() {
 		done++
@@ -107,27 +139,13 @@ func test(db *sql.DB, comp compressor) (buckets [1024]uint) {
 				elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
 		}
 
+		var payload []byte
 		err := rows.Scan(&payload)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		data, ok := extractLoraPayloadFromMessage(payload)
-		if !ok || len(data) == 0 {
-			continue
-		}
-
-		compressed := comp(data)
-
-		compressionRatio := float64(len(compressed)) / float64(len(data))
-		bucket := int(compressionRatio * float64(len(buckets)) / zeroRatio)
-		if bucket < 0 {
-			bucket = 0
-		}
-		if bucket >= len(buckets) {
-			bucket = len(buckets) - 1
-		}
-		buckets[bucket]++
+		tasks <- payload
 	}
 	return
 }
