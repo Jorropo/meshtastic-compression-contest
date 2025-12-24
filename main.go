@@ -138,10 +138,25 @@ func main() {
 			return b.Bytes()
 		},
 		"unishox2_meshtastic": func(data []byte) []byte {
-			result, err := unishox2.CompressSimple(data)
+			before, payload, after, ok, erro := extractPayloadFromDecoded(data)
+			if erro {
+				panic("unreachable")
+			}
+			if !ok {
+				return data // no payload field; no compression to be done
+			}
+
+			compressedPayload, err := unishox2.CompressSimple(payload)
 			if err != nil {
 				log.Fatalf("Compressing with unishox2: %v", err)
 			}
+
+			// rebuild the message with the compressed payload
+			var result []byte
+			result = append(result, before...)
+			result = protowire.AppendTag(result, 2, protowire.BytesType)
+			result = protowire.AppendBytes(result, compressedPayload)
+			result = append(result, after...)
 			return result
 		},
 	}
@@ -401,6 +416,11 @@ func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
 		msg = msg[n:]
 
 		if num != 4 { // Data field
+			n = protowire.ConsumeFieldValue(num, typ, msg)
+			if n < 0 {
+				return nil, false
+			}
+			msg = msg[n:]
 			continue
 		}
 		if typ != protowire.BytesType {
@@ -411,6 +431,43 @@ func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
 		if n < 0 {
 			return nil, false
 		}
+
+		_, _, _, _, erro := extractPayloadFromDecoded(data)
+		if erro {
+			return nil, false
+		}
+
 		return data, true
 	}
+}
+
+func extractPayloadFromDecoded(data []byte) (before, payload, after []byte, found, error bool) {
+	// extract the payload (2) field
+	msg := data
+	for len(msg) > 0 {
+		num, typ, n := protowire.ConsumeTag(msg)
+		if n < 0 {
+			return nil, nil, nil, false, true
+		}
+		if num == 2 {
+			if typ != protowire.BytesType {
+				return nil, nil, nil, false, true
+			}
+			before = data[:len(data)-len(msg)]
+			msg = msg[n:]
+			payload, n = protowire.ConsumeBytes(msg)
+			if n < 0 {
+				return nil, nil, nil, false, true
+			}
+			after = msg[n:]
+			return before, payload, after, true, false
+		}
+		msg = msg[n:]
+		n = protowire.ConsumeFieldValue(num, typ, msg)
+		if n < 0 {
+			return nil, nil, nil, false, true
+		}
+		msg = msg[n:]
+	}
+	return nil, nil, nil, false, false
 }
