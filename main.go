@@ -17,6 +17,7 @@ import (
 	"os"
 	"runtime"
 	"slices"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -220,7 +221,7 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 `)
 
 	for _, r := range results {
-		fmt.Fprintf(&README, "### `%s`\n\n![%s CDF](graphs/%s_cdf.png)\n\n![%s CDF](graphs/%s_cdf.png)\n\n", r.name, r.name, r.name, r.name+nameOnlyTextMessageAppSuffix, r.name+nameOnlyTextMessageAppSuffix)
+		fmt.Fprintf(&README, "### `%s`\n\n![%s CDF](graphs/%s_cdf.png)\n\n![%s CDF](graphs/%s_cdf.png)\n\n", r.name, r.name, strings.ReplaceAll(r.name, " ", "_"), r.name+nameOnlyTextMessageAppSuffix, strings.ReplaceAll(r.name+nameOnlyTextMessageAppSuffix, " ", "_"))
 	}
 
 	f, err := os.OpenFile("README.md", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
@@ -274,7 +275,7 @@ func testAndWrite(name string, comp compressor, onlyTextMessageApp bool) (avg fl
 	}
 	p.Add(line)
 
-	if err := p.Save(6*vg.Inch, 4*vg.Inch, "graphs/"+name+"_cdf.png"); err != nil {
+	if err := p.Save(6*vg.Inch, 4*vg.Inch, "graphs/"+strings.ReplaceAll(name, " ", "_")+"_cdf.png"); err != nil {
 		return 0, fmt.Errorf("saving plot: %w", err)
 	}
 	return avg, nil
