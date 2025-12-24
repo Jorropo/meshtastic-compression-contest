@@ -183,7 +183,7 @@ retry:
 		defer close(tasks)
 
 		var done uint64
-		totalRows = 50000
+		totalRows = 10000
 		for range totalRows {
 			done++
 			if done%1000 == 0 {
