@@ -43,6 +43,8 @@ import (
 
 const zeroRatio = 2
 
+const TEXT_MESSAGE_APP = 1
+
 type compressor = func([]byte) []byte
 
 func main() {
@@ -145,7 +147,6 @@ func main() {
 			if erro {
 				panic("unreachable")
 			}
-			const TEXT_MESSAGE_APP = 1
 			if !ok || portnum != TEXT_MESSAGE_APP {
 				return data // no payload field; no compression to be done
 			}
@@ -166,18 +167,27 @@ func main() {
 	}
 
 	type resultPair struct {
-		name string
-		avg  float64
+		name                       string
+		avg, avgOnlyTextMessageApp float64
 	}
 
 	var results = []resultPair{}
 
+	const nameOnlyTextMessageAppSuffix = " only TEXT_MESSAGE_APP"
+
 	for name, comp := range compressors {
-		avg, err := testAndWrite(name, comp)
+		avg, err := testAndWrite(name, comp, false)
 		if err != nil {
 			log.Fatalf("Error testing and writing %s: %v", name, err)
 		}
-		results = append(results, resultPair{name: name, avg: avg})
+
+		nameOnlyTextMessageApp := name + nameOnlyTextMessageAppSuffix
+
+		avgOnlyTextMessageApp, err := testAndWrite(nameOnlyTextMessageApp, comp, true)
+		if err != nil {
+			log.Fatalf("Error testing and writing %s: %v", nameOnlyTextMessageApp, err)
+		}
+		results = append(results, resultPair{name: name, avg: avg, avgOnlyTextMessageApp: avgOnlyTextMessageApp})
 	}
 
 	slices.SortFunc(results, func(a, b resultPair) int {
@@ -195,12 +205,12 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 ## Results
 
-| Compressor | Average Reciprocal Compression Ratio |
-|------------|--------------------------------------|
+| Compressor | Average Reciprocal Compression Ratio | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
+|------------|--------------------------------------|-------------------------------------------------------------|
 `)
 
 	for _, r := range results {
-		fmt.Fprintf(&README, "| `%s` | %.4f |\n", r.name, r.avg)
+		fmt.Fprintf(&README, "| `%s` | %.4f | %.4f |\n", r.name, r.avg, r.avgOnlyTextMessageApp)
 	}
 
 	README.WriteString(`## CDF Graphs
@@ -210,7 +220,7 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 `)
 
 	for _, r := range results {
-		fmt.Fprintf(&README, "### `%s` %.4f\n\n![%s CDF](graphs/%s_cdf.png)\n\n", r.name, r.avg, r.name, r.name)
+		fmt.Fprintf(&README, "### `%s`\n\n![%s CDF](graphs/%s_cdf.png)\n\n![%s CDF](graphs/%s_cdf.png)\n\n", r.name, r.name, r.name, r.name+nameOnlyTextMessageAppSuffix, r.name+nameOnlyTextMessageAppSuffix)
 	}
 
 	f, err := os.OpenFile("README.md", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
@@ -224,9 +234,9 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 	}
 }
 
-func testAndWrite(name string, comp compressor) (avg float64, err error) {
+func testAndWrite(name string, comp compressor, onlyTextMessageApp bool) (avg float64, err error) {
 	log.Printf("Testing compressor: %s", name)
-	results, avg := test(comp)
+	results, avg := test(comp, onlyTextMessageApp)
 
 	cdf := results
 	var sum uint64
@@ -280,8 +290,9 @@ func countRows(tableName string, db *sql.DB) uint {
 }
 
 const datasetName = "packets.bin"
+const tryLimit = 10000
 
-func test(comp compressor) (buckets [1024]uint64, avg float64) {
+func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg float64) {
 retry:
 	{
 		datasetFile, err := os.Open(datasetName)
@@ -332,17 +343,7 @@ retry:
 		}
 
 		var done, sumUncompressed uint64
-		totalRows = 10000
 		for range totalRows {
-			done++
-			if done%1000 == 0 {
-				elapsed := time.Since(start)
-				remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
-				log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
-					done, totalRows, float64(done)/float64(totalRows)*100,
-					elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
-			}
-
 			length, err := dataset.ReadByte()
 			if err != nil {
 				log.Fatalf("Reading length: %s", err)
@@ -354,8 +355,30 @@ retry:
 				log.Fatalf("Reading payload: %s", err)
 			}
 
+			if onlyTextMessageApp {
+				portnum, _, _, _, _, erro := extractPortnumAndPayloadFromDecoded(payload)
+				if erro {
+					panic("unreachable")
+				}
+				if portnum != TEXT_MESSAGE_APP {
+					continue
+				}
+			}
+
 			tasks <- payload
 			sumUncompressed += uint64(len(payload))
+
+			done++
+			if done%1000 == 0 {
+				elapsed := time.Since(start)
+				remaining := time.Duration(float64(elapsed) / float64(done) * float64(tryLimit-done))
+				log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
+					done, tryLimit, float64(done)/float64(tryLimit)*100,
+					elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
+			}
+			if done > tryLimit {
+				break
+			}
 		}
 		close(tasks)
 		wg.Wait()
