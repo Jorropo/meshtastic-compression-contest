@@ -8,6 +8,7 @@ require (
 	github.com/inkyblackness/res v0.0.0-20180728072643-e78e2ff1969d
 	github.com/klauspost/compress v1.18.2
 	github.com/pierrec/lz4/v4 v4.1.23
+	github.com/tmthrgd/shoco v0.0.0-20190904060532-13bc643e0d0b
 	golang.org/x/sys v0.36.0
 	gonum.org/v1/plot v0.16.0
 	google.golang.org/protobuf v1.36.11

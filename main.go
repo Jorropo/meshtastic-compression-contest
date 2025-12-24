@@ -42,6 +42,7 @@ import (
 	klauspost_zlib "github.com/klauspost/compress/zlib"
 	"github.com/klauspost/compress/zstd"
 	"github.com/pierrec/lz4/v4"
+	shoco_models "github.com/tmthrgd/shoco/models"
 
 	"github.com/Jorropo/meshtastic-compression-contest/unishox2"
 )
@@ -185,6 +186,54 @@ func main() {
 		},
 		"smaz_cespare":         smaz.Compress,
 		"smaz_cespare_Jorropo": compressorOnlyTextMessageAppContent(smaz.Compress),
+		"shoco_WordsEn_tmthrgd": func(data []byte) []byte {
+			return shoco_models.WordsEn().Compress(data)
+		},
+		"shoco_WordsEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.WordsEn().Compress(data)
+		}),
+		"shoco_WordsEn_proposed_tmthrgd": func(data []byte) []byte {
+			return shoco_models.WordsEn().ProposedCompress(data)
+		},
+		"shoco_WordsEn_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.WordsEn().ProposedCompress(data)
+		}),
+		"shoco_TextEn_tmthrgd": func(data []byte) []byte {
+			return shoco_models.TextEn().Compress(data)
+		},
+		"shoco_TextEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.TextEn().Compress(data)
+		}),
+		"shoco_TextEn_proposed_tmthrgd": func(data []byte) []byte {
+			return shoco_models.TextEn().ProposedCompress(data)
+		},
+		"shoco_TextEn_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.TextEn().ProposedCompress(data)
+		}),
+		"shoco_FilePath_tmthrgd": func(data []byte) []byte {
+			return shoco_models.FilePath().Compress(data)
+		},
+		"shoco_FilePath_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.FilePath().Compress(data)
+		}),
+		"shoco_FilePath_proposed_tmthrgd": func(data []byte) []byte {
+			return shoco_models.FilePath().ProposedCompress(data)
+		},
+		"shoco_FilePath_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.FilePath().ProposedCompress(data)
+		}),
+		"shoco_Emails_tmthrgd": func(data []byte) []byte {
+			return shoco_models.Emails().Compress(data)
+		},
+		"shoco_Emails_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.Emails().Compress(data)
+		}),
+		"shoco_Emails_proposed_tmthrgd": func(data []byte) []byte {
+			return shoco_models.Emails().ProposedCompress(data)
+		},
+		"shoco_Emails_proposed_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			return shoco_models.Emails().ProposedCompress(data)
+		}),
 	}
 
 	type resultPair struct {
