@@ -126,7 +126,7 @@ func main() {
 		},
 		"zstd_klauspost": func(data []byte) []byte {
 			var b bytes.Buffer
-			w, err := zstd.NewWriter(&b, zstd.WithEncoderCRC(false), zstd.WithEncoderLevel(zstd.SpeedBestCompression))
+			w, err := zstd.NewWriter(&b, zstd.WithEncoderCRC(false), zstd.WithEncoderLevel(zstd.SpeedBestCompression), zstd.WithEncoderConcurrency(1))
 			if err != nil {
 				log.Fatalf("Creating zstd writer: %v", err)
 			}
