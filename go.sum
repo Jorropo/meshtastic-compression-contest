@@ -19,6 +19,8 @@ github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b h1:slYM766cy2nI3BwyR
 github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b/go.mod h1:1KcenG0jGWcpt8ov532z81sp/kMMUG485J2InIOyADM=
 github.com/campoy/embedmd v1.0.0 h1:V4kI2qTJJLf4J29RzI/MAt2c3Bl4dQSYPuflzwFH2hY=
 github.com/campoy/embedmd v1.0.0/go.mod h1:oxyr9RCiSXg0M3VJ3ks0UGfp98BpSSGr0kpiX3MzVl8=
+github.com/cespare/go-smaz v1.0.0 h1:CUrrqIzakjINfWkdyNrVhtDKcGmdKkdB9AW7ke5nJ+M=
+github.com/cespare/go-smaz v1.0.0/go.mod h1:h77Hd4Dz/EPofhYvhkSuEyM0+6vyP3ckmSoBxTcKyxk=
 github.com/cloudflare/golz4 v0.0.0-20240916140612-caecf3c00c06 h1:6aQNgrBLzcUBaJHQjMk4X+jDo9rQtu5E0XNLhRV6pOk=
 github.com/cloudflare/golz4 v0.0.0-20240916140612-caecf3c00c06/go.mod h1:EOBUe0h4xcZ5GoxqC5SDxFQ8gwyZPKQoEzownBlhI80=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=

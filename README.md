@@ -10,6 +10,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | Compressor | Average Reciprocal Compression Ratio | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
 |------------|--------------------------------------|-------------------------------------------------------------|
 | `unishox2_meshtastic` | 0.9984 | 0.7637 |
+| `smaz_cespare_Jorropo` | 0.9993 | 0.8166 |
 | `noop` | 1.0000 | 1.0000 |
 | `lz4_cloudflareHC` | 1.0325 | 1.0429 |
 | `lz4_cloudflare` | 1.0330 | 1.0434 |
@@ -20,6 +21,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `zstd_klauspost` | 1.1776 | 1.2531 |
 | `zlib_klauspost` | 1.1852 | 1.2543 |
 | `zlib_std` | 1.2475 | 1.3544 |
+| `smaz_cespare` | 1.2514 | 0.8865 |
 | `lz4_pierrec` | 1.2995 | 1.4766 |
 | `s2_klauspost` | 1.3596 | 1.5730 |
 | `snappy_klauspost` | 1.3613 | 1.5775 |
@@ -34,6 +36,12 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![unishox2_meshtastic CDF](graphs/unishox2_meshtastic_cdf.png)
 
 ![unishox2_meshtastic only TEXT_MESSAGE_APP CDF](graphs/unishox2_meshtastic_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `smaz_cespare_Jorropo`
+
+![smaz_cespare_Jorropo CDF](graphs/smaz_cespare_Jorropo_cdf.png)
+
+![smaz_cespare_Jorropo only TEXT_MESSAGE_APP CDF](graphs/smaz_cespare_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `noop`
 
@@ -94,6 +102,12 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![zlib_std CDF](graphs/zlib_std_cdf.png)
 
 ![zlib_std only TEXT_MESSAGE_APP CDF](graphs/zlib_std_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `smaz_cespare`
+
+![smaz_cespare CDF](graphs/smaz_cespare_cdf.png)
+
+![smaz_cespare only TEXT_MESSAGE_APP CDF](graphs/smaz_cespare_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `lz4_pierrec`
 

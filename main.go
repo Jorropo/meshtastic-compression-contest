@@ -32,6 +32,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
+	"github.com/cespare/go-smaz"
 	cloudflare_lz4 "github.com/cloudflare/golz4"
 	"github.com/inkyblackness/res/compress/rle"
 	klauspost_flate "github.com/klauspost/compress/flate"
@@ -145,29 +146,14 @@ func main() {
 			w.Close()
 			return b.Bytes()
 		},
-		"unishox2_meshtastic": func(data []byte) []byte {
+		"unishox2_meshtastic": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			// copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
-			portnum, before, payload, after, ok := extractPortnumAndPayloadFromDecoded(data)
-			if !ok {
-				panic("unreachable")
-			}
-			if portnum != TEXT_MESSAGE_APP {
-				return data // no payload field; no compression to be done
-			}
-
-			compressedPayload, err := unishox2.CompressSimple(payload)
+			compressedPayload, err := unishox2.CompressSimple(data)
 			if err != nil {
 				log.Fatalf("Compressing with unishox2: %v", err)
 			}
-
-			// rebuild the message with the compressed payload
-			var result []byte
-			result = append(result, before...)
-			result = protowire.AppendTag(result, 2, protowire.BytesType)
-			result = protowire.AppendBytes(result, compressedPayload)
-			result = append(result, after...)
-			return result
-		},
+			return compressedPayload
+		}),
 		"rle_inkyblackness": func(data []byte) []byte {
 			var b bytes.Buffer
 			rle.Compress(&b, data)
@@ -197,6 +183,8 @@ func main() {
 			}
 			return r[:n]
 		},
+		"smaz_cespare":         smaz.Compress,
+		"smaz_cespare_Jorropo": compressorOnlyTextMessageAppContent(smaz.Compress),
 	}
 
 	type resultPair struct {
@@ -264,6 +252,28 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 	if _, err := README.WriteTo(f); err != nil {
 		log.Fatalf("Error writing to README.md: %v", err)
+	}
+}
+
+func compressorOnlyTextMessageAppContent(comp compressor) compressor {
+	return func(data []byte) []byte {
+		portnum, before, payload, after, ok := extractPortnumAndPayloadFromDecoded(data)
+		if !ok {
+			panic("unreachable")
+		}
+		if portnum != TEXT_MESSAGE_APP {
+			return data // no compression to be done
+		}
+
+		compressedPayload := comp(payload)
+
+		// rebuild the message with the compressed payload
+		var result []byte
+		result = append(result, before...)
+		result = protowire.AppendTag(result, 2, protowire.BytesType)
+		result = protowire.AppendBytes(result, compressedPayload)
+		result = append(result, after...)
+		return result
 	}
 }
 

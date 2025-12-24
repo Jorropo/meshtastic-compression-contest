@@ -3,6 +3,7 @@ module github.com/Jorropo/meshtastic-compression-contest
 go 1.24.0
 
 require (
+	github.com/cespare/go-smaz v1.0.0
 	github.com/cloudflare/golz4 v0.0.0-20240916140612-caecf3c00c06
 	github.com/inkyblackness/res v0.0.0-20180728072643-e78e2ff1969d
 	github.com/klauspost/compress v1.18.2
