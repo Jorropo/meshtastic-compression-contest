@@ -140,6 +140,7 @@ func main() {
 			return b.Bytes()
 		},
 		"unishox2_meshtastic": func(data []byte) []byte {
+			// copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
 			before, payload, after, ok, erro := extractPayloadFromDecoded(data)
 			if erro {
 				panic("unreachable")
