@@ -17,18 +17,14 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `sscc_Jorropo_unishox2_smaz` | 0.7485 | 0.9983 |
 | `sscc_Jorropo_unishox2_shoco_WordsEn_proposed` | 0.7542 | 0.9983 |
 | `unishox2_meshtastic` | 0.7578 | 0.9983 |
-| `sscc_Jorropo_unishox2` | 0.7578 | 0.9983 |
 | `sscc_Jorropo_smaz_shoco_WordsEn_proposed_shoco_TextEn_proposed` | 0.7604 | 0.9987 |
 | `sscc_Jorropo_smaz_shoco_TextEn_proposed` | 0.7613 | 0.9987 |
 | `sscc_Jorropo_shoco_WordsEn_proposed_shoco_TextEn_proposed` | 0.7709 | 0.9988 |
-| `sscc_Jorropo_shoco_TextEn_proposed` | 0.7722 | 0.9988 |
 | `shoco_TextEn_proposed_tmthrgd_Jorropo` | 0.7722 | 0.9988 |
 | `sscc_Jorropo_smaz_shoco_WordsEn_proposed` | 0.7816 | 0.9989 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.7825 | 0.9988 |
 | `smaz_cespare_Jorropo` | 0.7965 | 0.9990 |
-| `sscc_Jorropo_smaz` | 0.7965 | 0.9990 |
 | `shoco_WordsEn_proposed_tmthrgd_Jorropo` | 0.8388 | 0.9991 |
-| `sscc_Jorropo_shoco_WordsEn_proposed` | 0.8388 | 0.9991 |
 | `shoco_TextEn_tmthrgd` | 0.8466 | 1.2200 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.8482 | 0.9992 |
 | `shoco_TextEn_proposed_tmthrgd` | 0.8575 | 1.1715 |
@@ -110,12 +106,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![unishox2_meshtastic only TEXT_MESSAGE_APP CDF](graphs/unishox2_meshtastic_only_TEXT_MESSAGE_APP_cdf.png)
 
-### `sscc_Jorropo_unishox2`
-
-![sscc_Jorropo_unishox2 CDF](graphs/sscc_Jorropo_unishox2_cdf.png)
-
-![sscc_Jorropo_unishox2 only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_unishox2_only_TEXT_MESSAGE_APP_cdf.png)
-
 ### `sscc_Jorropo_smaz_shoco_WordsEn_proposed_shoco_TextEn_proposed`
 
 ![sscc_Jorropo_smaz_shoco_WordsEn_proposed_shoco_TextEn_proposed CDF](graphs/sscc_Jorropo_smaz_shoco_WordsEn_proposed_shoco_TextEn_proposed_cdf.png)
@@ -133,12 +123,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![sscc_Jorropo_shoco_WordsEn_proposed_shoco_TextEn_proposed CDF](graphs/sscc_Jorropo_shoco_WordsEn_proposed_shoco_TextEn_proposed_cdf.png)
 
 ![sscc_Jorropo_shoco_WordsEn_proposed_shoco_TextEn_proposed only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_shoco_WordsEn_proposed_shoco_TextEn_proposed_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_shoco_TextEn_proposed`
-
-![sscc_Jorropo_shoco_TextEn_proposed CDF](graphs/sscc_Jorropo_shoco_TextEn_proposed_cdf.png)
-
-![sscc_Jorropo_shoco_TextEn_proposed only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_shoco_TextEn_proposed_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `shoco_TextEn_proposed_tmthrgd_Jorropo`
 
@@ -164,23 +148,11 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![smaz_cespare_Jorropo only TEXT_MESSAGE_APP CDF](graphs/smaz_cespare_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
 
-### `sscc_Jorropo_smaz`
-
-![sscc_Jorropo_smaz CDF](graphs/sscc_Jorropo_smaz_cdf.png)
-
-![sscc_Jorropo_smaz only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_smaz_only_TEXT_MESSAGE_APP_cdf.png)
-
 ### `shoco_WordsEn_proposed_tmthrgd_Jorropo`
 
 ![shoco_WordsEn_proposed_tmthrgd_Jorropo CDF](graphs/shoco_WordsEn_proposed_tmthrgd_Jorropo_cdf.png)
 
 ![shoco_WordsEn_proposed_tmthrgd_Jorropo only TEXT_MESSAGE_APP CDF](graphs/shoco_WordsEn_proposed_tmthrgd_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
-
-### `sscc_Jorropo_shoco_WordsEn_proposed`
-
-![sscc_Jorropo_shoco_WordsEn_proposed CDF](graphs/sscc_Jorropo_shoco_WordsEn_proposed_cdf.png)
-
-![sscc_Jorropo_shoco_WordsEn_proposed only TEXT_MESSAGE_APP CDF](graphs/sscc_Jorropo_shoco_WordsEn_proposed_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `shoco_TextEn_tmthrgd`
 
