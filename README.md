@@ -30,6 +30,13 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `zstd_klauspost` | 1.2116 | 1.1833 |
 | `zlib_klauspost` | 1.2120 | 1.1903 |
 | `zlib_std` | 1.3005 | 1.2535 |
+| `zstd_klauspost=dict_16384_brute` | 1.3169 | 0.9201 |
+| `zstd_klauspost=dict_256_brute` | 1.3271 | 1.2580 |
+| `zstd_klauspost=dict_512_brute` | 1.3271 | 1.2255 |
+| `zstd_klauspost=dict_4096_brute` | 1.3275 | 1.0572 |
+| `zstd_klauspost=dict_2048_brute` | 1.3275 | 1.1159 |
+| `zstd_klauspost=dict_1024_brute` | 1.3275 | 1.1701 |
+| `zstd_klauspost=dict_8192_brute` | 1.3275 | 0.9941 |
 | `lz4_pierrec` | 1.4229 | 1.3083 |
 | `s2_klauspost` | 1.5068 | 1.3701 |
 | `snappy_klauspost` | 1.5118 | 1.3722 |
@@ -164,6 +171,48 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![zlib_std CDF](graphs/zlib_std_cdf.png)
 
 ![zlib_std only TEXT_MESSAGE_APP CDF](graphs/zlib_std_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `zstd_klauspost=dict_16384_brute`
+
+![zstd_klauspost=dict_16384_brute CDF](graphs/zstd_klauspost=dict_16384_brute_cdf.png)
+
+![zstd_klauspost=dict_16384_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_16384_brute_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `zstd_klauspost=dict_256_brute`
+
+![zstd_klauspost=dict_256_brute CDF](graphs/zstd_klauspost=dict_256_brute_cdf.png)
+
+![zstd_klauspost=dict_256_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_256_brute_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `zstd_klauspost=dict_512_brute`
+
+![zstd_klauspost=dict_512_brute CDF](graphs/zstd_klauspost=dict_512_brute_cdf.png)
+
+![zstd_klauspost=dict_512_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_512_brute_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `zstd_klauspost=dict_4096_brute`
+
+![zstd_klauspost=dict_4096_brute CDF](graphs/zstd_klauspost=dict_4096_brute_cdf.png)
+
+![zstd_klauspost=dict_4096_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_4096_brute_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `zstd_klauspost=dict_2048_brute`
+
+![zstd_klauspost=dict_2048_brute CDF](graphs/zstd_klauspost=dict_2048_brute_cdf.png)
+
+![zstd_klauspost=dict_2048_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_2048_brute_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `zstd_klauspost=dict_1024_brute`
+
+![zstd_klauspost=dict_1024_brute CDF](graphs/zstd_klauspost=dict_1024_brute_cdf.png)
+
+![zstd_klauspost=dict_1024_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_1024_brute_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `zstd_klauspost=dict_8192_brute`
+
+![zstd_klauspost=dict_8192_brute CDF](graphs/zstd_klauspost=dict_8192_brute_cdf.png)
+
+![zstd_klauspost=dict_8192_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_8192_brute_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `lz4_pierrec`
 
