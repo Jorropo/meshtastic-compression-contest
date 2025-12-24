@@ -241,114 +241,56 @@ func main() {
 	// Test all permutations we might consider.
 	for useUnishox2 := 0; useUnishox2 <= 1; useUnishox2++ {
 		for useSmaz := 0; useSmaz <= 1; useSmaz++ {
-			for useShoco_WordsEn := 0; useShoco_WordsEn <= 2; useShoco_WordsEn++ {
-				for useShoco_TextEn := 0; useShoco_TextEn <= 2; useShoco_TextEn++ {
-					for useShoco_FilePath := 0; useShoco_FilePath <= 2; useShoco_FilePath++ {
-						for useShoco_Emails := 0; useShoco_Emails <= 2; useShoco_Emails++ {
-							const defaultName = "sscc_Jorropo"
-							name := defaultName
-							if useUnishox2 == 1 {
-								name += "∪unishox2"
-							}
-							if useSmaz == 1 {
-								name += "∪smaz"
-							}
-							if useShoco_WordsEn == 1 {
-								name += "∪shoco_WordsEn"
-							}
-							if useShoco_WordsEn == 2 {
-								name += "∪shoco_WordsEn_proposed"
-							}
-							if useShoco_TextEn == 1 {
-								name += "∪shoco_TextEn"
-							}
-							if useShoco_TextEn == 2 {
-								name += "∪shoco_TextEn_proposed"
-							}
-							if useShoco_FilePath == 1 {
-								name += "∪shoco_FilePath"
-							}
-							if useShoco_FilePath == 2 {
-								name += "∪shoco_FilePath_proposed"
-							}
-							if useShoco_Emails == 1 {
-								name += "∪shoco_Emails"
-							}
-							if useShoco_Emails == 2 {
-								name += "∪shoco_Emails_proposed"
-							}
-							if name == defaultName {
-								continue // no compressors selected
-							}
-							compressors[name] = compressorOnlyTextMessageAppContent(func(data []byte) []byte {
-								best := data
-								if useUnishox2 == 1 {
-									compressed, err := unishox2.CompressSimple(data)
-									if err != nil {
-										panic(err)
-									}
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useSmaz == 1 {
-									compressed := smaz.Compress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_WordsEn == 1 {
-									compressed := shoco_models.WordsEn().Compress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_WordsEn == 2 {
-									compressed := shoco_models.WordsEn().ProposedCompress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_TextEn == 1 {
-									compressed := shoco_models.TextEn().Compress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_TextEn == 2 {
-									compressed := shoco_models.TextEn().ProposedCompress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_FilePath == 1 {
-									compressed := shoco_models.FilePath().Compress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_FilePath == 2 {
-									compressed := shoco_models.FilePath().ProposedCompress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_Emails == 1 {
-									compressed := shoco_models.Emails().Compress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								if useShoco_Emails == 2 {
-									compressed := shoco_models.Emails().ProposedCompress(data)
-									if len(compressed) < len(best) {
-										best = compressed
-									}
-								}
-								return best
-							})
-						}
+			for useShoco_WordsEn := 0; useShoco_WordsEn <= 1; useShoco_WordsEn++ {
+				for useShoco_TextEn := 0; useShoco_TextEn <= 1; useShoco_TextEn++ {
+					const defaultName = "sscc_Jorropo"
+					name := defaultName
+					if useUnishox2 == 1 {
+						name += "_unishox2"
 					}
+					if useSmaz == 1 {
+						name += "_smaz"
+					}
+					if useShoco_WordsEn == 1 {
+						name += "_shoco_WordsEn_proposed"
+					}
+					if useShoco_TextEn == 1 {
+						name += "_shoco_TextEn_proposed"
+					}
+					if name == defaultName {
+						continue // no compressors selected
+					}
+					compressors[name] = compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+						best := data
+						if useUnishox2 == 1 {
+							compressed, err := unishox2.CompressSimple(data)
+							if err != nil {
+								panic(err)
+							}
+							if len(compressed) < len(best) {
+								best = compressed
+							}
+						}
+						if useSmaz == 1 {
+							compressed := smaz.Compress(data)
+							if len(compressed) < len(best) {
+								best = compressed
+							}
+						}
+						if useShoco_WordsEn == 1 {
+							compressed := shoco_models.WordsEn().ProposedCompress(data)
+							if len(compressed) < len(best) {
+								best = compressed
+							}
+						}
+						if useShoco_TextEn == 1 {
+							compressed := shoco_models.TextEn().ProposedCompress(data)
+							if len(compressed) < len(best) {
+								best = compressed
+							}
+						}
+						return best
+					})
 				}
 			}
 		}
