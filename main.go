@@ -1,10 +1,16 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"compress/gzip"
 	"database/sql"
+	"encoding/binary"
+	"errors"
+	"fmt"
+	"io"
 	"log"
+	"os"
 	"runtime"
 	"sync"
 	"sync/atomic"
@@ -17,6 +23,8 @@ import (
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
+
+	"golang.org/x/sys/unix"
 )
 
 const zeroRatio = 2
@@ -24,13 +32,7 @@ const zeroRatio = 2
 type compressor = func([]byte) []byte
 
 func main() {
-	db, err := sql.Open("sqlite", "file:packets_recovered.db?mode=ro")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	results := test(db, func(data []byte) []byte {
+	results := test(func(data []byte) []byte {
 		var b bytes.Buffer
 		w := gzip.NewWriter(&b)
 		w.Write(data)
@@ -88,39 +90,98 @@ func countRows(tableName string, db *sql.DB) uint {
 	return count
 }
 
-func test(db *sql.DB, comp compressor) (buckets [1024]uint64) {
-	start := time.Now()
-	totalRows := countRows("packet", db)
+const datasetName = "packets.bin"
 
-	tasks := make(chan []byte)
-	var wg sync.WaitGroup
-	cores := runtime.GOMAXPROCS(0)
-	wg.Add(cores)
-	for range cores {
-		go func() {
-			defer wg.Done()
-			for payload := range tasks {
-				data, ok := extractLoraPayloadFromMessage(payload)
-				if !ok || len(data) == 0 {
-					continue
+func test(comp compressor) (buckets [1024]uint64) {
+retry:
+	{
+		datasetFile, err := os.Open(datasetName)
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				log.Printf("Dataset %s not found, generating...", datasetName)
+				err = generateDatasetBin(datasetName)
+				if err != nil {
+					log.Fatalf("Generating dataset: %v", err)
 				}
-
-				compressed := comp(data)
-
-				compressionRatio := float64(len(compressed)) / float64(len(data))
-				bucket := int(compressionRatio * float64(len(buckets)) / zeroRatio)
-				if bucket < 0 {
-					bucket = 0
-				}
-				if bucket >= len(buckets) {
-					bucket = len(buckets) - 1
-				}
-				atomic.AddUint64(&buckets[bucket], 1)
+				goto retry
 			}
-		}()
+			log.Fatalf("Opening dataset: %v", err)
+		}
+		defer datasetFile.Close()
+		dataset := bufio.NewReader(datasetFile)
+
+		start := time.Now()
+		var totalRows uint64
+		err = binary.Read(dataset, binary.LittleEndian, &totalRows)
+		if err != nil {
+			log.Fatalf("Reading total rows from dataset: %v", err)
+		}
+
+		tasks := make(chan []byte)
+		var wg sync.WaitGroup
+		cores := runtime.GOMAXPROCS(0)
+		wg.Add(cores)
+		for range cores {
+			go func() {
+				defer wg.Done()
+				for payload := range tasks {
+					compressed := comp(payload)
+
+					compressionRatio := float64(len(compressed)) / float64(len(payload))
+					bucket := int(compressionRatio * float64(len(buckets)) / zeroRatio)
+					if bucket < 0 {
+						bucket = 0
+					}
+					if bucket >= len(buckets) {
+						bucket = len(buckets) - 1
+					}
+					atomic.AddUint64(&buckets[bucket], 1)
+				}
+			}()
+		}
+		defer wg.Wait()
+		defer close(tasks)
+
+		var done uint64
+		for range totalRows {
+			done++
+			if done%50000 == 0 {
+				elapsed := time.Since(start)
+				remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
+				log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
+					done, totalRows, float64(done)/float64(totalRows)*100,
+					elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
+			}
+
+			length, err := dataset.ReadByte()
+			if err != nil {
+				log.Fatalf("Reading length: %s", err)
+			}
+
+			payload := make([]byte, length)
+			_, err = io.ReadFull(dataset, payload)
+			if err != nil {
+				log.Fatalf("Reading payload: %s", err)
+			}
+
+			tasks <- payload
+		}
+		return
 	}
-	defer wg.Wait()
-	defer close(tasks)
+}
+
+func generateDatasetBin(filename string) error {
+	db, err := sql.Open("sqlite", "file:packets_recovered.db?mode=ro")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	file, err := os.OpenFile(".", unix.O_TMPFILE|os.O_WRONLY, 0622)
+	if err != nil {
+		return fmt.Errorf("creating file: %w", err)
+	}
+	defer file.Close()
 
 	rows, err := db.Query(`SELECT payload FROM packet`)
 	if err != nil {
@@ -128,13 +189,25 @@ func test(db *sql.DB, comp compressor) (buckets [1024]uint64) {
 	}
 	defer rows.Close()
 
+	start := time.Now()
+	totalRows := countRows("packet", db)
+
+	w := bufio.NewWriter(file)
+
+	// Number of entries placeholder
+	_, err = w.WriteString("\x00\x00\x00\x00\x00\x00\x00\x00")
+	if err != nil {
+		return fmt.Errorf("writing placeholder to file: %w", err)
+	}
+
+	var totalEntries uint64
 	var done uint
 	for rows.Next() {
 		done++
 		if done%50000 == 0 {
 			elapsed := time.Since(start)
 			remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
-			log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
+			log.Printf("Creating binary file %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
 				done, totalRows, float64(done)/float64(totalRows)*100,
 				elapsed.Truncate(time.Second), remaining.Truncate(time.Second))
 		}
@@ -145,9 +218,59 @@ func test(db *sql.DB, comp compressor) (buckets [1024]uint64) {
 			log.Fatal(err)
 		}
 
-		tasks <- payload
+		data, ok := extractLoraPayloadFromMessage(payload)
+		if !ok || len(data) == 0 || len(data) > 255 {
+			continue
+		}
+
+		err = w.WriteByte(byte(len(data)))
+		if err != nil {
+			return fmt.Errorf("writing entry length to file: %w", err)
+		}
+
+		_, err = w.Write(data)
+		if err != nil {
+			return fmt.Errorf("writing entry to file: %w", err)
+		}
+		totalEntries++
 	}
-	return
+	err = w.Flush()
+	if err != nil {
+		return fmt.Errorf("flushing to file: %w", err)
+	}
+
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		return fmt.Errorf("seeking file: %w", err)
+	}
+
+	err = binary.Write(file, binary.LittleEndian, totalEntries)
+	if err != nil {
+		return fmt.Errorf("writing total entries to file: %w", err)
+	}
+
+	syscallConn, err := file.SyscallConn()
+	if err != nil {
+		return fmt.Errorf("getting syscall connection: %w", err)
+	}
+	var errr error
+	err = syscallConn.Control(func(fd uintptr) {
+		errr = unix.Fdatasync(int(fd))
+		if errr != nil {
+			errr = fmt.Errorf("syncing file: %w", errr)
+			return
+		}
+		errr = unix.Linkat(int(fd), "", unix.AT_FDCWD, filename, unix.AT_EMPTY_PATH)
+		if errr != nil {
+			errr = fmt.Errorf("linking temp file to %s: %w", filename, errr)
+			return
+		}
+	})
+	if err != nil {
+		return fmt.Errorf("getting control: %w", err)
+	}
+
+	return errr
 }
 
 func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
