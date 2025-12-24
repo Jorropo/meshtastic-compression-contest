@@ -286,7 +286,11 @@ func main() {
 	}
 
 	slices.SortFunc(results, func(a, b resultPair) int {
-		return cmp.Compare(a.avgOnlyTextMessageApp, b.avgOnlyTextMessageApp)
+		r := cmp.Compare(a.avgOnlyTextMessageApp, b.avgOnlyTextMessageApp)
+		if r == 0 {
+			r = cmp.Compare(a.name, b.name)
+		}
+		return r
 	})
 
 	var README bytes.Buffer
@@ -300,22 +304,40 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 ## Results
 
-| Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) | Average Reciprocal Compression Ratio |
-|------------|--------------------------------------------------------------|--------------------------------------|
+| Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
+|------------|--------------------------------------------------------------|
 `)
 
 	for _, r := range results {
-		fmt.Fprintf(&README, "| `%s` | %.4f | %.4f |\n", r.name, r.avgOnlyTextMessageApp, r.avg)
+		fmt.Fprintf(&README, "| `%s` | %.4f |\n", r.name, r.avgOnlyTextMessageApp)
 	}
 
-	README.WriteString(`## CDF Graphs
+	README.WriteString(`
+| Compressor | Average Reciprocal Compression Ratio |
+|------------|--------------------------------------|
+`)
+
+	slices.SortFunc(results, func(a, b resultPair) int {
+		r := cmp.Compare(a.avg, b.avg)
+		if r == 0 {
+			r = cmp.Compare(a.name, b.name)
+		}
+		return r
+	})
+
+	for _, r := range results {
+		fmt.Fprintf(&README, "| `%s` | %.4f |\n", r.name, r.avg)
+	}
+
+	README.WriteString(`
+## CDF Graphs
 
 The following graphs show the cumulative distribution function (CDF) of the reciprocal compression ratios for each compressor.
 
 `)
 
 	for _, r := range results {
-		fmt.Fprintf(&README, "### `%s`\n\n![%s CDF](graphs/%s_cdf.png)\n\n![%s CDF](graphs/%s_cdf.png)\n\n", r.name, r.name, strings.ReplaceAll(r.name, " ", "_"), r.name+nameOnlyTextMessageAppSuffix, strings.ReplaceAll(r.name+nameOnlyTextMessageAppSuffix, " ", "_"))
+		fmt.Fprintf(&README, "### `%s`\n\n![%s CDF](graphs/%s_cdf.png)\n\n![%s CDF](graphs/%s_cdf.png)\n\n", r.name, r.name+nameOnlyTextMessageAppSuffix, strings.ReplaceAll(r.name+nameOnlyTextMessageAppSuffix, " ", "_"), r.name, strings.ReplaceAll(r.name, " ", "_"))
 	}
 
 	f, err := os.OpenFile("README.md", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
