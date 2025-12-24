@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"cmp"
 	"compress/flate"
 	"compress/gzip"
 	"compress/lzw"
@@ -15,6 +16,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -161,16 +163,35 @@ func main() {
 		},
 	}
 
+	type resultPair struct {
+		name string
+		avg  float64
+	}
+
+	var results = []resultPair{}
+
 	for name, comp := range compressors {
-		if err := testAndWrite(name, comp); err != nil {
-			log.Printf("Error testing and writing %s: %v", name, err)
+		avg, err := testAndWrite(name, comp)
+		if err != nil {
+			log.Fatalf("Error testing and writing %s: %v", name, err)
 		}
+		results = append(results, resultPair{name: name, avg: avg})
+	}
+
+	slices.SortFunc(results, func(a, b resultPair) int {
+		return cmp.Compare(a.avg, b.avg)
+	})
+
+	fmt.Println("| Compressor | Average Reciprocal Compression Ratio |")
+	fmt.Println("|------------|--------------------------------------|")
+	for _, r := range results {
+		fmt.Printf("| %s | %.4f |\n", r.name, r.avg)
 	}
 }
 
-func testAndWrite(name string, comp compressor) error {
+func testAndWrite(name string, comp compressor) (avg float64, err error) {
 	log.Printf("Testing compressor: %s", name)
-	results := test(comp)
+	results, avg := test(comp)
 
 	cdf := results
 	var sum uint64
@@ -204,14 +225,14 @@ func testAndWrite(name string, comp compressor) error {
 
 	line, err := plotter.NewLine(pts)
 	if err != nil {
-		return fmt.Errorf("creating line plot: %w", err)
+		return 0, fmt.Errorf("creating line plot: %w", err)
 	}
 	p.Add(line)
 
 	if err := p.Save(6*vg.Inch, 4*vg.Inch, name+"_cdf.png"); err != nil {
-		return fmt.Errorf("saving plot: %w", err)
+		return 0, fmt.Errorf("saving plot: %w", err)
 	}
-	return nil
+	return avg, nil
 }
 
 func countRows(tableName string, db *sql.DB) uint {
@@ -225,7 +246,7 @@ func countRows(tableName string, db *sql.DB) uint {
 
 const datasetName = "packets.bin"
 
-func test(comp compressor) (buckets [1024]uint64) {
+func test(comp compressor) (buckets [1024]uint64, avg float64) {
 retry:
 	{
 		datasetFile, err := os.Open(datasetName)
@@ -250,6 +271,7 @@ retry:
 			log.Fatalf("Reading total rows from dataset: %v", err)
 		}
 
+		var sumCompressed uint64
 		tasks := make(chan []byte)
 		var wg sync.WaitGroup
 		cores := runtime.GOMAXPROCS(0)
@@ -269,13 +291,12 @@ retry:
 						bucket = len(buckets) - 1
 					}
 					atomic.AddUint64(&buckets[bucket], 1)
+					atomic.AddUint64(&sumCompressed, uint64(len(compressed)))
 				}
 			}()
 		}
-		defer wg.Wait()
-		defer close(tasks)
 
-		var done uint64
+		var done, sumUncompressed uint64
 		totalRows = 10000
 		for range totalRows {
 			done++
@@ -299,7 +320,11 @@ retry:
 			}
 
 			tasks <- payload
+			sumUncompressed += uint64(len(payload))
 		}
+		close(tasks)
+		wg.Wait()
+		avg = float64(sumCompressed) / float64(sumUncompressed)
 		return
 	}
 }
