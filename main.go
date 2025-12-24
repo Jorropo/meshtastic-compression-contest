@@ -379,7 +379,7 @@ func main() {
 	}
 
 	slices.SortFunc(results, func(a, b resultPair) int {
-		return cmp.Compare(a.avg, b.avg)
+		return cmp.Compare(a.avgOnlyTextMessageApp, b.avgOnlyTextMessageApp)
 	})
 
 	var README bytes.Buffer
@@ -393,12 +393,12 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 ## Results
 
-| Compressor | Average Reciprocal Compression Ratio | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
-|------------|--------------------------------------|-------------------------------------------------------------|
+| Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) | Average Reciprocal Compression Ratio |
+|------------|--------------------------------------------------------------|--------------------------------------|
 `)
 
 	for _, r := range results {
-		fmt.Fprintf(&README, "| `%s` | %.4f | %.4f |\n", r.name, r.avg, r.avgOnlyTextMessageApp)
+		fmt.Fprintf(&README, "| `%s` | %.4f | %.4f |\n", r.name, r.avgOnlyTextMessageApp, r.avg)
 	}
 
 	README.WriteString(`## CDF Graphs
