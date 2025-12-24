@@ -143,11 +143,11 @@ func main() {
 		},
 		"unishox2_meshtastic": func(data []byte) []byte {
 			// copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
-			portnum, before, payload, after, ok, erro := extractPortnumAndPayloadFromDecoded(data)
-			if erro {
+			portnum, before, payload, after, ok := extractPortnumAndPayloadFromDecoded(data)
+			if !ok {
 				panic("unreachable")
 			}
-			if !ok || portnum != TEXT_MESSAGE_APP {
+			if portnum != TEXT_MESSAGE_APP {
 				return data // no payload field; no compression to be done
 			}
 
@@ -356,8 +356,8 @@ retry:
 			}
 
 			if onlyTextMessageApp {
-				portnum, _, _, _, _, erro := extractPortnumAndPayloadFromDecoded(payload)
-				if erro {
+				portnum, _, _, _, ok := extractPortnumAndPayloadFromDecoded(payload)
+				if !ok {
 					panic("unreachable")
 				}
 				if portnum != TEXT_MESSAGE_APP {
@@ -515,8 +515,8 @@ func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
 			return nil, false
 		}
 
-		_, _, _, _, _, erro := extractPortnumAndPayloadFromDecoded(data)
-		if erro {
+		_, _, _, _, ok := extractPortnumAndPayloadFromDecoded(data)
+		if !ok {
 			return nil, false
 		}
 
@@ -524,48 +524,48 @@ func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
 	}
 }
 
-func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, payload, after []byte, found, error bool) {
+func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, payload, after []byte, ok bool) {
 	msg := data
 	for len(msg) > 0 {
 		num, typ, n := protowire.ConsumeTag(msg)
 		if n < 0 {
-			return 0, nil, nil, nil, false, true
+			return 0, nil, nil, nil, false
 		}
 		msgBeforeConsumeTag := msg
 		msg = msg[n:]
 		switch num {
 		case 1: // portnum
 			if typ != protowire.VarintType {
-				return 0, nil, nil, nil, false, true
+				return 0, nil, nil, nil, false
 			}
 			portnum, n = protowire.ConsumeVarint(msg)
 			if n < 0 {
-				return 0, nil, nil, nil, false, true
+				return 0, nil, nil, nil, false
 			}
 			msg = msg[n:]
 			if payload != nil {
-				return portnum, before, payload, after, true, false
+				return portnum, before, payload, after, true
 			}
 		case 2: // payload
 			if typ != protowire.BytesType {
-				return 0, nil, nil, nil, false, true
+				return 0, nil, nil, nil, false
 			}
 			before = data[:len(data)-len(msgBeforeConsumeTag)]
 			payload, n = protowire.ConsumeBytes(msg)
 			if n < 0 {
-				return 0, nil, nil, nil, false, true
+				return 0, nil, nil, nil, false
 			}
 			after = msg[n:]
 			if portnum != 0 {
-				return portnum, before, payload, after, true, false
+				return portnum, before, payload, after, true
 			}
 		default:
 			n = protowire.ConsumeFieldValue(num, typ, msg)
 			if n < 0 {
-				return 0, nil, nil, nil, false, true
+				return 0, nil, nil, nil, false
 			}
 			msg = msg[n:]
 		}
 	}
-	return 0, nil, nil, nil, false, false
+	return 0, nil, nil, nil, false
 }
