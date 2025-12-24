@@ -32,6 +32,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
+	"github.com/inkyblackness/res/compress/rle"
 	klauspost_flate "github.com/klauspost/compress/flate"
 	klauspost_gzip "github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/s2"
@@ -164,6 +165,11 @@ func main() {
 			result = protowire.AppendBytes(result, compressedPayload)
 			result = append(result, after...)
 			return result
+		},
+		"rle_inkyblackness": func(data []byte) []byte {
+			var b bytes.Buffer
+			rle.Compress(&b, data)
+			return b.Bytes()
 		},
 	}
 

@@ -12,6 +12,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `unishox2_meshtastic` | 0.9984 | 0.7637 |
 | `noop` | 1.0000 | 1.0000 |
 | `flate_klauspost` | 1.0642 | 1.0595 |
+| `rle_inkyblackness` | 1.0859 | 1.1225 |
 | `flate_std` | 1.1264 | 1.1595 |
 | `lzw_std` | 1.1473 | 1.1330 |
 | `zstd_klauspost` | 1.1776 | 1.2531 |
@@ -42,6 +43,12 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![flate_klauspost CDF](graphs/flate_klauspost_cdf.png)
 
 ![flate_klauspost only TEXT_MESSAGE_APP CDF](graphs/flate_klauspost_only_TEXT_MESSAGE_APP_cdf.png)
+
+### `rle_inkyblackness`
+
+![rle_inkyblackness CDF](graphs/rle_inkyblackness_cdf.png)
+
+![rle_inkyblackness only TEXT_MESSAGE_APP CDF](graphs/rle_inkyblackness_only_TEXT_MESSAGE_APP_cdf.png)
 
 ### `flate_std`
 

@@ -3,6 +3,7 @@ module github.com/Jorropo/meshtastic-compression-contest
 go 1.24.0
 
 require (
+	github.com/inkyblackness/res v0.0.0-20180728072643-e78e2ff1969d
 	github.com/klauspost/compress v1.18.2
 	golang.org/x/sys v0.36.0
 	gonum.org/v1/plot v0.16.0
@@ -27,6 +28,7 @@ require (
 	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
 	golang.org/x/image v0.25.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	modernc.org/libc v1.66.10 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
