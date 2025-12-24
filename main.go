@@ -25,6 +25,9 @@ import (
 	"gonum.org/v1/plot/vg"
 
 	"golang.org/x/sys/unix"
+
+	klauspost_gzip "github.com/klauspost/compress/gzip"
+	"github.com/klauspost/compress/zstd"
 )
 
 const zeroRatio = 2
@@ -32,13 +35,49 @@ const zeroRatio = 2
 type compressor = func([]byte) []byte
 
 func main() {
-	results := test(func(data []byte) []byte {
-		var b bytes.Buffer
-		w := gzip.NewWriter(&b)
-		w.Write(data)
-		w.Close()
-		return b.Bytes()
-	})
+	compressors := map[string]compressor{
+		"noop": func(data []byte) []byte { return data },
+		"gzip_std_best_compression": func(data []byte) []byte {
+			var b bytes.Buffer
+			w, err := gzip.NewWriterLevel(&b, gzip.BestCompression)
+			if err != nil {
+				log.Fatalf("Creating gzip writer: %v", err)
+			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"gzip_klauspost_compression": func(data []byte) []byte {
+			var b bytes.Buffer
+			w, err := klauspost_gzip.NewWriterLevel(&b, klauspost_gzip.BestCompression)
+			if err != nil {
+				log.Fatalf("Creating gzip writer: %v", err)
+			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+		"zstd_best_compression": func(data []byte) []byte {
+			var b bytes.Buffer
+			w, err := zstd.NewWriter(&b, zstd.WithEncoderCRC(false), zstd.WithEncoderLevel(zstd.SpeedBestCompression))
+			if err != nil {
+				log.Fatalf("Creating zstd writer: %v", err)
+			}
+			w.Write(data)
+			w.Close()
+			return b.Bytes()
+		},
+	}
+
+	for name, comp := range compressors {
+		if err := testAndWrite(name, comp); err != nil {
+			log.Printf("Error testing and writing %s: %v", name, err)
+		}
+	}
+}
+
+func testAndWrite(name string, comp compressor) error {
+	results := test(comp)
 
 	cdf := results
 	var sum uint64
@@ -55,8 +94,8 @@ func main() {
 	}
 
 	p := plot.New()
-	p.Title.Text = "Compression Ratio CDF"
-	p.X.Label.Text = "Reprocial Compression Ratio"
+	p.Title.Text = name + " CDF"
+	p.X.Label.Text = "Reciprocal Compression Ratio"
 	p.Y.Label.Text = "CDF"
 	p.X.Tick.Marker = plot.ConstantTicks([]plot.Tick{
 		{Value: 0, Label: "0"},
@@ -72,13 +111,14 @@ func main() {
 
 	line, err := plotter.NewLine(pts)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("creating line plot: %w", err)
 	}
 	p.Add(line)
 
-	if err := p.Save(6*vg.Inch, 4*vg.Inch, "compression_cdf.png"); err != nil {
-		log.Fatal(err)
+	if err := p.Save(6*vg.Inch, 4*vg.Inch, name+"_cdf.png"); err != nil {
+		return fmt.Errorf("saving plot: %w", err)
 	}
+	return nil
 }
 
 func countRows(tableName string, db *sql.DB) uint {
