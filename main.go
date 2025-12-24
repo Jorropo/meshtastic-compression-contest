@@ -143,9 +143,10 @@ retry:
 		defer close(tasks)
 
 		var done uint64
+		totalRows = 50000
 		for range totalRows {
 			done++
-			if done%50000 == 0 {
+			if done%1000 == 0 {
 				elapsed := time.Since(start)
 				remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
 				log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
