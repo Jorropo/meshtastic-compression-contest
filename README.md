@@ -9,14 +9,15 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
 |------------|--------------------------------------------------------------|
-| `shoco_TextEn_tmthrgd_Jorropo` | 0.7590 |
-| `unishox2_meshtastic` | 0.7771 |
-| `smaz_cespare_Jorropo` | 0.8012 |
+| `shoco_TextEn_tmthrgd_Jorropo` | 0.7711 |
+| `unishox2_meshtastic` | 0.7892 |
+| `smaz_cespare_Jorropo` | 0.8253 |
+| `snowflake_Jorropo` | 0.8253 |
 | `shoco_TextEn_tmthrgd` | 0.8434 |
-| `shoco_WordsEn_tmthrgd_Jorropo` | 0.8494 |
-| `shoco_FilePath_tmthrgd_Jorropo` | 0.8554 |
-| `shoco_Emails_tmthrgd_Jorropo` | 0.8976 |
+| `shoco_WordsEn_tmthrgd_Jorropo` | 0.8614 |
+| `shoco_FilePath_tmthrgd_Jorropo` | 0.8675 |
 | `smaz_cespare` | 0.9036 |
+| `shoco_Emails_tmthrgd_Jorropo` | 0.9096 |
 | `shoco_WordsEn_tmthrgd` | 0.9337 |
 | `shoco_FilePath_tmthrgd` | 0.9398 |
 | `shoco_Emails_tmthrgd` | 0.9819 |
@@ -42,9 +43,10 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.9991 |
 | `unishox2_meshtastic` | 0.9992 |
 | `smaz_cespare_Jorropo` | 0.9993 |
-| `shoco_WordsEn_tmthrgd_Jorropo` | 0.9994 |
+| `snowflake_Jorropo` | 0.9993 |
+| `shoco_WordsEn_tmthrgd_Jorropo` | 0.9995 |
 | `shoco_FilePath_tmthrgd_Jorropo` | 0.9995 |
-| `shoco_Emails_tmthrgd_Jorropo` | 0.9996 |
+| `shoco_Emails_tmthrgd_Jorropo` | 0.9997 |
 | `noop` | 1.0000 |
 | `zstd_klauspost_chopped_Jorropo` | 1.0181 |
 | `lz4_cloudflareHC` | 1.0330 |
@@ -88,6 +90,12 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![smaz_cespare_Jorropo only TEXT_MESSAGE_APP CDF](graphs/smaz_cespare_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
 
 ![smaz_cespare_Jorropo CDF](graphs/smaz_cespare_Jorropo_cdf.png)
+
+### `snowflake_Jorropo`
+
+![snowflake_Jorropo only TEXT_MESSAGE_APP CDF](graphs/snowflake_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
+
+![snowflake_Jorropo CDF](graphs/snowflake_Jorropo_cdf.png)
 
 ### `shoco_WordsEn_tmthrgd_Jorropo`
 

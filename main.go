@@ -51,8 +51,6 @@ import (
 
 const zeroRatio = 2
 
-const TEXT_MESSAGE_APP = 1
-
 type compressor = func([]byte) []byte
 
 func main() {
@@ -204,6 +202,7 @@ func main() {
 		"shoco_Emails_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.Emails().ProposedCompress(data)
 		}),
+		"snowflake_Jorropo": explodePacketForPortnumPayloadSubstitution(compressPerPortnumTuned),
 	}
 
 	if false {
@@ -381,28 +380,13 @@ func makeChoppedHeaderZstd(comp compressor) compressor {
 }
 
 func compressorOnlyTextMessageAppContent(comp compressor) compressor {
-	return func(data []byte) []byte {
-		portnum, before, payload, after, ok := extractPortnumAndPayloadFromDecoded(data)
-		if !ok {
-			panic("unreachable")
-		}
+	return explodePacketForPortnumPayloadSubstitution(func(portnum uint64, payload []byte) (newPortnum uint64, newPayload []byte, changed bool) {
 		if portnum != TEXT_MESSAGE_APP {
-			return data // no compression to be done
+			return 0, nil, false
 		}
-
-		compressedPayload := comp(payload)
-		if len(compressedPayload) >= len(payload) {
-			return data // no compression gain
-		}
-
-		// rebuild the message with the compressed payload
-		var result []byte
-		result = append(result, before...)
-		result = protowire.AppendTag(result, 2, protowire.BytesType)
-		result = protowire.AppendBytes(result, compressedPayload)
-		result = append(result, after...)
-		return result
-	}
+		newPayload = comp(payload)
+		return COMPRESSED, newPayload, true
+	})
 }
 
 func testAndWrite(name string, comp compressor, onlyTextMessageApp bool) (avg float64, err error) {
