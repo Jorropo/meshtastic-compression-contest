@@ -104,6 +104,10 @@ func explodePacketForPortnumPayloadSubstitution(substitute func(portnum uint64, 
 		newPacket = protowire.AppendTag(newPacket, 2, protowire.BytesType)
 		newPacket = protowire.AppendBytes(newPacket, newPayload)
 
+		if len(newPacket) >= len(input.data) {
+			return input.data
+		}
+
 		return newPacket
 	}
 }

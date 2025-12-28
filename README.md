@@ -9,15 +9,15 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
 |------------|--------------------------------------------------------------|
-| `unishox2_meshtastic` | 0.7618 |
-| `shoco_TextEn_tmthrgd_Jorropo` | 0.7671 |
-| `snowflake_Jorropo` | 0.7907 |
-| `smaz_cespare_Jorropo` | 0.8191 |
-| `shoco_WordsEn_tmthrgd_Jorropo` | 0.8416 |
+| `unishox2_meshtastic` | 0.7553 |
+| `shoco_TextEn_tmthrgd_Jorropo` | 0.7606 |
+| `snowflake_Jorropo` | 0.7755 |
+| `smaz_cespare_Jorropo` | 0.7998 |
+| `shoco_WordsEn_tmthrgd_Jorropo` | 0.8351 |
 | `shoco_TextEn_tmthrgd` | 0.8419 |
-| `shoco_FilePath_tmthrgd_Jorropo` | 0.8742 |
+| `shoco_FilePath_tmthrgd_Jorropo` | 0.8678 |
+| `shoco_Emails_tmthrgd_Jorropo` | 0.8750 |
 | `smaz_cespare` | 0.8807 |
-| `shoco_Emails_tmthrgd_Jorropo` | 0.8815 |
 | `shoco_WordsEn_tmthrgd` | 0.9160 |
 | `shoco_FilePath_tmthrgd` | 0.9487 |
 | `shoco_Emails_tmthrgd` | 0.9559 |
@@ -38,10 +38,10 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
-| `snowflake_Jorropo` | 0.8239 |
-| `unishox2_meshtastic` | 0.9987 |
+| `snowflake_Jorropo` | 0.8238 |
+| `unishox2_meshtastic` | 0.9986 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.9987 |
-| `smaz_cespare_Jorropo` | 0.9990 |
+| `smaz_cespare_Jorropo` | 0.9989 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.9991 |
 | `shoco_FilePath_tmthrgd_Jorropo` | 0.9993 |
 | `shoco_Emails_tmthrgd_Jorropo` | 0.9993 |
