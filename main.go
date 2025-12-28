@@ -15,7 +15,6 @@ import (
 	"log"
 	"math/rand/v2"
 	"os"
-	"os/exec"
 	"runtime"
 	"slices"
 	"strconv"
@@ -42,7 +41,6 @@ import (
 	"github.com/klauspost/compress/s2"
 	"github.com/klauspost/compress/snappy"
 	klauspost_zlib "github.com/klauspost/compress/zlib"
-	"github.com/klauspost/compress/zstd"
 	"github.com/pierrec/lz4/v4"
 	shoco_models "github.com/tmthrgd/shoco/models"
 
@@ -52,6 +50,8 @@ import (
 const zeroRatio = 2
 
 type compressor = func([]byte) []byte
+
+const generateTrainingDataset = false
 
 func main() {
 	compressors := map[string]compressor{
@@ -123,8 +123,6 @@ func main() {
 			w.Close()
 			return b.Bytes()
 		},
-		"zstd_klauspost":                 zstdCompressor(nil),
-		"zstd_klauspost_chopped_Jorropo": makeChoppedHeaderZstd(zstdCompressor(nil)),
 		"s2_klauspost": func(data []byte) []byte {
 			var b bytes.Buffer
 			w := s2.NewWriter(&b, s2.WriterBestCompression(), s2.WriterConcurrency(1))
@@ -203,49 +201,6 @@ func main() {
 			return shoco_models.Emails().ProposedCompress(data)
 		}),
 		"snowflake_Jorropo": explodePacketForPortnumPayloadSubstitution(compressPerPortnumTuned),
-	}
-
-	if false {
-		// has an overfitting problem so remove it for now
-		err := os.MkdirAll("dictionaries/", 0755)
-		if err != nil {
-			log.Fatalf("Creating dictionaries directory: %v", err)
-		}
-		// Generate brute zstd dictionaries
-		var wg sync.WaitGroup
-		var compressorsMu sync.Mutex
-		for i := uint(256); i <= 16*1024; i *= 2 {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				dictPath := "dictionaries/" + strconv.FormatUint(uint64(i), 10) + "_brute.zstddict"
-			retry:
-				{
-					dictionary, err := os.ReadFile(dictPath)
-					if err != nil {
-						if errors.Is(err, os.ErrNotExist) {
-							log.Printf("Generating all packets zstd dictionary of size %d bytes...", i)
-							cmd := exec.Command("zstd", "--train", "--dictID=0", "-T0", "--maxdict="+strconv.FormatUint(uint64(i), 10), "-o", dictPath, "-r", "train/packets")
-							cmd.Stderr = os.Stderr
-							cmd.Stdout = os.Stdout
-							err = cmd.Run()
-							if err != nil {
-								log.Fatalf("Generating zstd dictionary: %v", err)
-							}
-							goto retry
-						}
-						log.Fatalf("Opening zstd dictionary: %v", err)
-					}
-					name := fmt.Sprintf("zstd_klauspost=dict_%d_brute", i)
-					nameChopped := fmt.Sprintf("zstd_klauspost_chopped_Jorropo=dict_%d_brute", i)
-					compressorsMu.Lock()
-					defer compressorsMu.Unlock()
-					compressors[name] = zstdCompressor(dictionary)
-					compressors[nameChopped] = makeChoppedHeaderZstd(zstdCompressor(dictionary))
-				}
-			}()
-		}
-		wg.Wait()
 	}
 
 	type resultPair struct {
@@ -338,47 +293,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 	}
 }
 
-func zstdCompressor(dictionary []byte) compressor {
-	return func(data []byte) []byte {
-		var b bytes.Buffer
-		opts := []zstd.EOption{
-			zstd.WithEncoderCRC(false),
-			zstd.WithEncoderLevel(zstd.SpeedBestCompression),
-			zstd.WithEncoderConcurrency(1),
-		}
-		if dictionary != nil {
-			opts = append(opts, zstd.WithEncoderDict(dictionary))
-		}
-		w, err := zstd.NewWriter(&b, opts...)
-		if err != nil {
-			log.Fatalf("Creating zstd writer: %v", err)
-		}
-		w.Write(data)
-		w.Close()
-		return b.Bytes()
-	}
-}
-
-// this makes a custom zstd format we can reconstruct while lightening the headers and supporting a low overhead non-compressed mode
-func makeChoppedHeaderZstd(comp compressor) compressor {
-	return func(data []byte) []byte {
-		compressed := comp(data)
-		if string(compressed[:4]) != "\x28\xb5\x2f\xfd" {
-			panic("missing zstd magic number")
-		}
-		compressed = compressed[4:] // chop off zstd magic number
-		if len(compressed) > len(data) {
-			compressed[0] = 0b00100000 // use a reserved bit of the Content checksum flag (which we always disable) to indicate uncompressed
-			copy(compressed[1:], data)
-			return compressed[:1+len(data)]
-		}
-		if compressed[0]&0b00100000 != 0 {
-			panic("reserved bit set")
-		}
-		return compressed
-	}
-}
-
 func compressorOnlyTextMessageAppContent(comp compressor) compressor {
 	return explodePacketForPortnumPayloadSubstitution(func(portnum uint64, payload []byte) (newPortnum uint64, newPayload []byte, changed bool) {
 		if portnum != TEXT_MESSAGE_APP {
@@ -445,7 +359,7 @@ func countRows(tableName string, db *sql.DB) uint {
 }
 
 const datasetName = "packets.bin"
-const tryLimit = 1000
+const tryLimit = 10000
 
 var cachedDataset []byte
 var loadDatasetOnce sync.Once
@@ -522,7 +436,7 @@ func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg f
 		sumUncompressed += uint64(len(payload))
 
 		done++
-		if done%100 == 0 {
+		if done%2000 == 0 {
 			elapsed := time.Since(start)
 			remaining := time.Duration(float64(elapsed) / float64(done) * float64(totalRows-done))
 			log.Printf("Processed %d/%d rows (%.2f%%), elapsed: %s, remaining: %s",
@@ -606,7 +520,7 @@ func generateDatasetBin(filename string) error {
 				return fmt.Errorf("writing entry to file: %w", err)
 			}
 			totalEntries++
-		} else {
+		} else if generateTrainingDataset {
 		storeTrainingPacket:
 			{
 				f, err := os.OpenFile("train/packets/"+strconv.FormatUint(uint64(trainPackets), 36), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0622)
