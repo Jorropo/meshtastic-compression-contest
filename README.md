@@ -22,13 +22,6 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `shoco_Emails_tmthrgd` | 0.9819 |
 | `noop` | 1.0000 |
 | `zstd_klauspost_chopped_Jorropo` | 1.0361 |
-| `zstd_klauspost_chopped_Jorropo=dict_1024_brute` | 1.0361 |
-| `zstd_klauspost_chopped_Jorropo=dict_16384_brute` | 1.0361 |
-| `zstd_klauspost_chopped_Jorropo=dict_2048_brute` | 1.0361 |
-| `zstd_klauspost_chopped_Jorropo=dict_256_brute` | 1.0361 |
-| `zstd_klauspost_chopped_Jorropo=dict_4096_brute` | 1.0361 |
-| `zstd_klauspost_chopped_Jorropo=dict_512_brute` | 1.0361 |
-| `zstd_klauspost_chopped_Jorropo=dict_8192_brute` | 1.0361 |
 | `lz4_cloudflare` | 1.0602 |
 | `lz4_cloudflareHC` | 1.0602 |
 | `flate_klauspost` | 1.1145 |
@@ -38,13 +31,6 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `zstd_klauspost` | 1.3253 |
 | `zlib_klauspost` | 1.3313 |
 | `zlib_std` | 1.4458 |
-| `zstd_klauspost=dict_1024_brute` | 1.4699 |
-| `zstd_klauspost=dict_16384_brute` | 1.4699 |
-| `zstd_klauspost=dict_2048_brute` | 1.4699 |
-| `zstd_klauspost=dict_256_brute` | 1.4699 |
-| `zstd_klauspost=dict_4096_brute` | 1.4699 |
-| `zstd_klauspost=dict_512_brute` | 1.4699 |
-| `zstd_klauspost=dict_8192_brute` | 1.4699 |
 | `lz4_pierrec` | 1.5422 |
 | `s2_klauspost` | 1.6506 |
 | `snappy_klauspost` | 1.6506 |
@@ -53,14 +39,6 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
-| `zstd_klauspost_chopped_Jorropo=dict_16384_brute` | 0.7692 |
-| `zstd_klauspost_chopped_Jorropo=dict_8192_brute` | 0.8266 |
-| `zstd_klauspost_chopped_Jorropo=dict_4096_brute` | 0.8656 |
-| `zstd_klauspost_chopped_Jorropo=dict_2048_brute` | 0.9076 |
-| `zstd_klauspost=dict_16384_brute` | 0.9223 |
-| `zstd_klauspost_chopped_Jorropo=dict_1024_brute` | 0.9473 |
-| `zstd_klauspost_chopped_Jorropo=dict_512_brute` | 0.9896 |
-| `zstd_klauspost=dict_8192_brute` | 0.9935 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.9991 |
 | `unishox2_meshtastic` | 0.9992 |
 | `smaz_cespare_Jorropo` | 0.9993 |
@@ -68,27 +46,21 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `shoco_FilePath_tmthrgd_Jorropo` | 0.9995 |
 | `shoco_Emails_tmthrgd_Jorropo` | 0.9996 |
 | `noop` | 1.0000 |
-| `zstd_klauspost_chopped_Jorropo=dict_256_brute` | 1.0140 |
 | `zstd_klauspost_chopped_Jorropo` | 1.0181 |
 | `lz4_cloudflareHC` | 1.0330 |
 | `lz4_cloudflare` | 1.0335 |
-| `zstd_klauspost=dict_4096_brute` | 1.0523 |
 | `flate_klauspost` | 1.0650 |
 | `rle_inkyblackness` | 1.0843 |
-| `zstd_klauspost=dict_2048_brute` | 1.1084 |
 | `flate_std` | 1.1276 |
 | `lzw_std` | 1.1452 |
-| `zstd_klauspost=dict_1024_brute` | 1.1653 |
 | `shoco_TextEn_tmthrgd` | 1.1714 |
 | `shoco_WordsEn_tmthrgd` | 1.1723 |
 | `shoco_Emails_tmthrgd` | 1.1736 |
 | `shoco_FilePath_tmthrgd` | 1.1749 |
 | `zstd_klauspost` | 1.1835 |
 | `zlib_klauspost` | 1.1901 |
-| `zstd_klauspost=dict_512_brute` | 1.2243 |
 | `zlib_std` | 1.2527 |
 | `smaz_cespare` | 1.2528 |
-| `zstd_klauspost=dict_256_brute` | 1.2587 |
 | `lz4_pierrec` | 1.3095 |
 | `s2_klauspost` | 1.3710 |
 | `snappy_klauspost` | 1.3743 |
@@ -98,54 +70,6 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 ## CDF Graphs
 
 The following graphs show the cumulative distribution function (CDF) of the reciprocal compression ratios for each compressor.
-
-### `zstd_klauspost_chopped_Jorropo=dict_16384_brute`
-
-![zstd_klauspost_chopped_Jorropo=dict_16384_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_16384_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost_chopped_Jorropo=dict_16384_brute CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_16384_brute_cdf.png)
-
-### `zstd_klauspost_chopped_Jorropo=dict_8192_brute`
-
-![zstd_klauspost_chopped_Jorropo=dict_8192_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_8192_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost_chopped_Jorropo=dict_8192_brute CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_8192_brute_cdf.png)
-
-### `zstd_klauspost_chopped_Jorropo=dict_4096_brute`
-
-![zstd_klauspost_chopped_Jorropo=dict_4096_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_4096_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost_chopped_Jorropo=dict_4096_brute CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_4096_brute_cdf.png)
-
-### `zstd_klauspost_chopped_Jorropo=dict_2048_brute`
-
-![zstd_klauspost_chopped_Jorropo=dict_2048_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_2048_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost_chopped_Jorropo=dict_2048_brute CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_2048_brute_cdf.png)
-
-### `zstd_klauspost=dict_16384_brute`
-
-![zstd_klauspost=dict_16384_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_16384_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost=dict_16384_brute CDF](graphs/zstd_klauspost=dict_16384_brute_cdf.png)
-
-### `zstd_klauspost_chopped_Jorropo=dict_1024_brute`
-
-![zstd_klauspost_chopped_Jorropo=dict_1024_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_1024_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost_chopped_Jorropo=dict_1024_brute CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_1024_brute_cdf.png)
-
-### `zstd_klauspost_chopped_Jorropo=dict_512_brute`
-
-![zstd_klauspost_chopped_Jorropo=dict_512_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_512_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost_chopped_Jorropo=dict_512_brute CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_512_brute_cdf.png)
-
-### `zstd_klauspost=dict_8192_brute`
-
-![zstd_klauspost=dict_8192_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_8192_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost=dict_8192_brute CDF](graphs/zstd_klauspost=dict_8192_brute_cdf.png)
 
 ### `shoco_TextEn_tmthrgd_Jorropo`
 
@@ -189,12 +113,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![noop CDF](graphs/noop_cdf.png)
 
-### `zstd_klauspost_chopped_Jorropo=dict_256_brute`
-
-![zstd_klauspost_chopped_Jorropo=dict_256_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_256_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost_chopped_Jorropo=dict_256_brute CDF](graphs/zstd_klauspost_chopped_Jorropo=dict_256_brute_cdf.png)
-
 ### `zstd_klauspost_chopped_Jorropo`
 
 ![zstd_klauspost_chopped_Jorropo only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost_chopped_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
@@ -213,12 +131,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![lz4_cloudflare CDF](graphs/lz4_cloudflare_cdf.png)
 
-### `zstd_klauspost=dict_4096_brute`
-
-![zstd_klauspost=dict_4096_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_4096_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost=dict_4096_brute CDF](graphs/zstd_klauspost=dict_4096_brute_cdf.png)
-
 ### `flate_klauspost`
 
 ![flate_klauspost only TEXT_MESSAGE_APP CDF](graphs/flate_klauspost_only_TEXT_MESSAGE_APP_cdf.png)
@@ -231,12 +143,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![rle_inkyblackness CDF](graphs/rle_inkyblackness_cdf.png)
 
-### `zstd_klauspost=dict_2048_brute`
-
-![zstd_klauspost=dict_2048_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_2048_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost=dict_2048_brute CDF](graphs/zstd_klauspost=dict_2048_brute_cdf.png)
-
 ### `flate_std`
 
 ![flate_std only TEXT_MESSAGE_APP CDF](graphs/flate_std_only_TEXT_MESSAGE_APP_cdf.png)
@@ -248,12 +154,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![lzw_std only TEXT_MESSAGE_APP CDF](graphs/lzw_std_only_TEXT_MESSAGE_APP_cdf.png)
 
 ![lzw_std CDF](graphs/lzw_std_cdf.png)
-
-### `zstd_klauspost=dict_1024_brute`
-
-![zstd_klauspost=dict_1024_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_1024_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost=dict_1024_brute CDF](graphs/zstd_klauspost=dict_1024_brute_cdf.png)
 
 ### `shoco_TextEn_tmthrgd`
 
@@ -291,12 +191,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![zlib_klauspost CDF](graphs/zlib_klauspost_cdf.png)
 
-### `zstd_klauspost=dict_512_brute`
-
-![zstd_klauspost=dict_512_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_512_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost=dict_512_brute CDF](graphs/zstd_klauspost=dict_512_brute_cdf.png)
-
 ### `zlib_std`
 
 ![zlib_std only TEXT_MESSAGE_APP CDF](graphs/zlib_std_only_TEXT_MESSAGE_APP_cdf.png)
@@ -308,12 +202,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![smaz_cespare only TEXT_MESSAGE_APP CDF](graphs/smaz_cespare_only_TEXT_MESSAGE_APP_cdf.png)
 
 ![smaz_cespare CDF](graphs/smaz_cespare_cdf.png)
-
-### `zstd_klauspost=dict_256_brute`
-
-![zstd_klauspost=dict_256_brute only TEXT_MESSAGE_APP CDF](graphs/zstd_klauspost=dict_256_brute_only_TEXT_MESSAGE_APP_cdf.png)
-
-![zstd_klauspost=dict_256_brute CDF](graphs/zstd_klauspost=dict_256_brute_cdf.png)
 
 ### `lz4_pierrec`
 

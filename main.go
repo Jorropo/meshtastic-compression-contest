@@ -206,45 +206,48 @@ func main() {
 		}),
 	}
 
-	err := os.MkdirAll("dictionaries/", 0755)
-	if err != nil {
-		log.Fatalf("Creating dictionaries directory: %v", err)
-	}
-	// Generate brute zstd dictionaries
-	var wg sync.WaitGroup
-	var compressorsMu sync.Mutex
-	for i := uint(256); i <= 16*1024; i *= 2 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			dictPath := "dictionaries/" + strconv.FormatUint(uint64(i), 10) + "_brute.zstddict"
-		retry:
-			{
-				dictionary, err := os.ReadFile(dictPath)
-				if err != nil {
-					if errors.Is(err, os.ErrNotExist) {
-						log.Printf("Generating all packets zstd dictionary of size %d bytes...", i)
-						cmd := exec.Command("zstd", "--train", "--dictID=0", "-T0", "--maxdict="+strconv.FormatUint(uint64(i), 10), "-o", dictPath, "-r", "train/packets")
-						cmd.Stderr = os.Stderr
-						cmd.Stdout = os.Stdout
-						err = cmd.Run()
-						if err != nil {
-							log.Fatalf("Generating zstd dictionary: %v", err)
+	if false {
+		// has an overfitting problem so remove it for now
+		err := os.MkdirAll("dictionaries/", 0755)
+		if err != nil {
+			log.Fatalf("Creating dictionaries directory: %v", err)
+		}
+		// Generate brute zstd dictionaries
+		var wg sync.WaitGroup
+		var compressorsMu sync.Mutex
+		for i := uint(256); i <= 16*1024; i *= 2 {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				dictPath := "dictionaries/" + strconv.FormatUint(uint64(i), 10) + "_brute.zstddict"
+			retry:
+				{
+					dictionary, err := os.ReadFile(dictPath)
+					if err != nil {
+						if errors.Is(err, os.ErrNotExist) {
+							log.Printf("Generating all packets zstd dictionary of size %d bytes...", i)
+							cmd := exec.Command("zstd", "--train", "--dictID=0", "-T0", "--maxdict="+strconv.FormatUint(uint64(i), 10), "-o", dictPath, "-r", "train/packets")
+							cmd.Stderr = os.Stderr
+							cmd.Stdout = os.Stdout
+							err = cmd.Run()
+							if err != nil {
+								log.Fatalf("Generating zstd dictionary: %v", err)
+							}
+							goto retry
 						}
-						goto retry
+						log.Fatalf("Opening zstd dictionary: %v", err)
 					}
-					log.Fatalf("Opening zstd dictionary: %v", err)
+					name := fmt.Sprintf("zstd_klauspost=dict_%d_brute", i)
+					nameChopped := fmt.Sprintf("zstd_klauspost_chopped_Jorropo=dict_%d_brute", i)
+					compressorsMu.Lock()
+					defer compressorsMu.Unlock()
+					compressors[name] = zstdCompressor(dictionary)
+					compressors[nameChopped] = makeChoppedHeaderZstd(zstdCompressor(dictionary))
 				}
-				name := fmt.Sprintf("zstd_klauspost=dict_%d_brute", i)
-				nameChopped := fmt.Sprintf("zstd_klauspost_chopped_Jorropo=dict_%d_brute", i)
-				compressorsMu.Lock()
-				defer compressorsMu.Unlock()
-				compressors[name] = zstdCompressor(dictionary)
-				compressors[nameChopped] = makeChoppedHeaderZstd(zstdCompressor(dictionary))
-			}
-		}()
+			}()
+		}
+		wg.Wait()
 	}
-	wg.Wait()
 
 	type resultPair struct {
 		name                       string
