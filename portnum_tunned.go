@@ -18,8 +18,9 @@ const (
 	TEXT_MESSAGE_APP_COMPRESSOR compressorNum = 1
 )
 
-func explodePacketForPortnumPayloadSubstitution(substitute func(portnum uint64, payload []byte) (newPortnum uint64, newPayload []byte, changed bool)) compressor {
-	return func(packet []byte) []byte {
+func explodePacketForPortnumPayloadSubstitution(substitute func(portnum uint64, from, to uint32, payload []byte) (newPortnum uint64, newPayload []byte, changed bool)) compressor {
+	return func(input compressionInput) []byte {
+		packet := input.data
 		var portnum uint64
 		var payload []byte
 		var startOfPortnum, endOfPortnum, startOfPayload, endOfPayload int
@@ -79,7 +80,7 @@ func explodePacketForPortnumPayloadSubstitution(substitute func(portnum uint64, 
 			panic("missing required fields")
 		}
 
-		newPortnum, newPayload, changed := substitute(portnum, payload)
+		newPortnum, newPayload, changed := substitute(portnum, input.from, input.to, payload)
 		if !changed {
 			return packet
 		}
@@ -103,7 +104,7 @@ func explodePacketForPortnumPayloadSubstitution(substitute func(portnum uint64, 
 	}
 }
 
-func compressPerPortnumTuned(portnum uint64, payload []byte) (uint64, []byte, bool) {
+func compressPerPortnumTuned(portnum uint64, from, to uint32, payload []byte) (uint64, []byte, bool) {
 	var compressedPortnum compressorNum
 	var compressedPayload []byte
 	switch portnum {

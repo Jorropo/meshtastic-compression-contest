@@ -49,14 +49,18 @@ import (
 
 const zeroRatio = 2
 
-type compressor = func([]byte) []byte
+type compressionInput struct {
+	from, to uint32
+	data     []byte
+}
+type compressor = func(compressionInput) []byte
 
 const generateTrainingDataset = false
 
 func main() {
 	compressors := map[string]compressor{
-		"noop": func(data []byte) []byte { return data },
-		"gzip_std": func(data []byte) []byte {
+		"noop": compressJustBytes(func(data []byte) []byte { return data }),
+		"gzip_std": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := gzip.NewWriterLevel(&b, gzip.BestCompression)
 			if err != nil {
@@ -65,8 +69,8 @@ func main() {
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"gzip_klauspost": func(data []byte) []byte {
+		}),
+		"gzip_klauspost": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := klauspost_gzip.NewWriterLevel(&b, klauspost_gzip.BestCompression)
 			if err != nil {
@@ -75,8 +79,8 @@ func main() {
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"flate_std": func(data []byte) []byte {
+		}),
+		"flate_std": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := flate.NewWriter(&b, flate.BestCompression)
 			if err != nil {
@@ -85,8 +89,8 @@ func main() {
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"flate_klauspost": func(data []byte) []byte {
+		}),
+		"flate_klauspost": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := klauspost_flate.NewWriter(&b, klauspost_flate.BestCompression)
 			if err != nil {
@@ -95,8 +99,8 @@ func main() {
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"zlib_std": func(data []byte) []byte {
+		}),
+		"zlib_std": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := zlib.NewWriterLevel(&b, zlib.BestCompression)
 			if err != nil {
@@ -105,8 +109,8 @@ func main() {
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"zlib_klauspost": func(data []byte) []byte {
+		}),
+		"zlib_klauspost": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w, err := klauspost_zlib.NewWriterLevel(&b, klauspost_zlib.BestCompression)
 			if err != nil {
@@ -115,28 +119,28 @@ func main() {
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"lzw_std": func(data []byte) []byte {
+		}),
+		"lzw_std": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w := lzw.NewWriter(&b, lzw.LSB, 8)
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"s2_klauspost": func(data []byte) []byte {
+		}),
+		"s2_klauspost": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w := s2.NewWriter(&b, s2.WriterBestCompression(), s2.WriterConcurrency(1))
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"snappy_klauspost": func(data []byte) []byte {
+		}),
+		"snappy_klauspost": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w := snappy.NewBufferedWriter(&b)
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
+		}),
 		"unishox2_meshtastic": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			// copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
 			compressedPayload, err := unishox2.CompressSimple(data)
@@ -145,58 +149,58 @@ func main() {
 			}
 			return compressedPayload
 		}),
-		"rle_inkyblackness": func(data []byte) []byte {
+		"rle_inkyblackness": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			rle.Compress(&b, data)
 			return b.Bytes()
-		},
-		"lz4_pierrec": func(data []byte) []byte {
+		}),
+		"lz4_pierrec": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			w := lz4.NewWriter(&b)
 			w.Apply(lz4.BlockChecksumOption(false), lz4.ChecksumOption(false), lz4.CompressionLevelOption(lz4.Level9), lz4.ConcurrencyOption(1))
 			w.Write(data)
 			w.Close()
 			return b.Bytes()
-		},
-		"lz4_cloudflare": func(data []byte) []byte {
+		}),
+		"lz4_cloudflare": compressJustBytes(func(data []byte) []byte {
 			r := make([]byte, cloudflare_lz4.CompressBound(data))
 			n, err := cloudflare_lz4.Compress(data, r)
 			if err != nil {
 				panic(err)
 			}
 			return r[:n]
-		},
-		"lz4_cloudflareHC": func(data []byte) []byte {
+		}),
+		"lz4_cloudflareHC": compressJustBytes(func(data []byte) []byte {
 			r := make([]byte, cloudflare_lz4.CompressBound(data))
 			n, err := cloudflare_lz4.CompressHCLevel(data, r, 16)
 			if err != nil {
 				panic(err)
 			}
 			return r[:n]
-		},
-		"smaz_cespare":         smaz.Compress,
+		}),
+		"smaz_cespare":         compressJustBytes(smaz.Compress),
 		"smaz_cespare_Jorropo": compressorOnlyTextMessageAppContent(smaz.Compress),
-		"shoco_WordsEn_tmthrgd": func(data []byte) []byte {
+		"shoco_WordsEn_tmthrgd": compressJustBytes(func(data []byte) []byte {
 			return shoco_models.WordsEn().ProposedCompress(data)
-		},
+		}),
 		"shoco_WordsEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.WordsEn().ProposedCompress(data)
 		}),
-		"shoco_TextEn_tmthrgd": func(data []byte) []byte {
+		"shoco_TextEn_tmthrgd": compressJustBytes(func(data []byte) []byte {
 			return shoco_models.TextEn().ProposedCompress(data)
-		},
+		}),
 		"shoco_TextEn_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.TextEn().ProposedCompress(data)
 		}),
-		"shoco_FilePath_tmthrgd": func(data []byte) []byte {
+		"shoco_FilePath_tmthrgd": compressJustBytes(func(data []byte) []byte {
 			return shoco_models.FilePath().ProposedCompress(data)
-		},
+		}),
 		"shoco_FilePath_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.FilePath().ProposedCompress(data)
 		}),
-		"shoco_Emails_tmthrgd": func(data []byte) []byte {
+		"shoco_Emails_tmthrgd": compressJustBytes(func(data []byte) []byte {
 			return shoco_models.Emails().ProposedCompress(data)
-		},
+		}),
 		"shoco_Emails_tmthrgd_Jorropo": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			return shoco_models.Emails().ProposedCompress(data)
 		}),
@@ -293,8 +297,14 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 	}
 }
 
-func compressorOnlyTextMessageAppContent(comp compressor) compressor {
-	return explodePacketForPortnumPayloadSubstitution(func(portnum uint64, payload []byte) (newPortnum uint64, newPayload []byte, changed bool) {
+func compressJustBytes(comp func([]byte) []byte) compressor {
+	return func(input compressionInput) []byte {
+		return comp(input.data)
+	}
+}
+
+func compressorOnlyTextMessageAppContent(comp func([]byte) []byte) compressor {
+	return explodePacketForPortnumPayloadSubstitution(func(portnum uint64, from, to uint32, payload []byte) (newPortnum uint64, newPayload []byte, changed bool) {
 		if portnum != TEXT_MESSAGE_APP {
 			return 0, nil, false
 		}
@@ -390,7 +400,7 @@ func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg f
 	dataset = dataset[8:]
 
 	var sumCompressed uint64
-	tasks := make(chan []byte)
+	tasks := make(chan compressionInput)
 	var wg sync.WaitGroup
 	cores := runtime.GOMAXPROCS(0)
 	wg.Add(cores)
@@ -400,7 +410,7 @@ func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg f
 			for payload := range tasks {
 				compressed := comp(payload)
 
-				compressionRatio := float64(len(compressed)) / float64(len(payload))
+				compressionRatio := float64(len(compressed)) / float64(len(payload.data))
 				bucket := int(compressionRatio * float64(len(buckets)) / zeroRatio)
 				if bucket < 0 {
 					bucket = 0
@@ -416,6 +426,9 @@ func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg f
 
 	var done, sumUncompressed uint64
 	for range totalRows {
+		from, to := binary.LittleEndian.Uint32(dataset[:4]), binary.LittleEndian.Uint32(dataset[4:8])
+		dataset = dataset[8:]
+
 		length := dataset[0]
 		dataset = dataset[1:]
 
@@ -432,7 +445,7 @@ func test(comp compressor, onlyTextMessageApp bool) (buckets [1024]uint64, avg f
 			}
 		}
 
-		tasks <- payload
+		tasks <- compressionInput{from: from, to: to, data: payload}
 		sumUncompressed += uint64(len(payload))
 
 		done++
@@ -502,7 +515,7 @@ func generateDatasetBin(filename string) error {
 			log.Fatal(err)
 		}
 
-		data, ok := extractLoraPayloadFromMessage(payload)
+		from, to, data, ok := extractLoraPayloadFromMessage(payload)
 		if !ok || len(data) == 0 || len(data) > 255 {
 			continue
 		}
@@ -510,6 +523,9 @@ func generateDatasetBin(filename string) error {
 		roll := rng.UintN(totalRows)
 		// randomly pick messages for training or benchmark set
 		if roll < tryLimit {
+			binary.Write(w, binary.LittleEndian, from)
+			binary.Write(w, binary.LittleEndian, to)
+
 			err = w.WriteByte(byte(len(data)))
 			if err != nil {
 				return fmt.Errorf("writing entry length to file: %w", err)
@@ -612,38 +628,61 @@ func generateDatasetBin(filename string) error {
 	return errr
 }
 
-func extractLoraPayloadFromMessage(msg []byte) ([]byte, bool) {
-	for {
+func extractLoraPayloadFromMessage(msg []byte) (from, to uint32, payload []byte, ok bool) {
+	for len(msg) > 0 {
 		num, typ, n := protowire.ConsumeTag(msg)
 		if n < 0 {
-			return nil, false
+			return 0, 0, nil, false
 		}
 		msg = msg[n:]
 
-		if num != 4 { // Data field
-			n = protowire.ConsumeFieldValue(num, typ, msg)
+		switch num {
+		case 1: // From field
+			if typ != protowire.Fixed32Type {
+				return 0, 0, nil, false
+			}
+
+			from, n = protowire.ConsumeFixed32(msg)
 			if n < 0 {
-				return nil, false
+				return 0, 0, nil, false
 			}
 			msg = msg[n:]
-			continue
-		}
-		if typ != protowire.BytesType {
-			return nil, false
+		case 2: // To field
+			if typ != protowire.Fixed32Type {
+				return 0, 0, nil, false
+			}
+
+			to, n = protowire.ConsumeFixed32(msg)
+			if n < 0 {
+				return 0, 0, nil, false
+			}
+			msg = msg[n:]
+		case 4: // Data field
+			if typ != protowire.BytesType {
+				return 0, 0, nil, false
+			}
+
+			payload, n = protowire.ConsumeBytes(msg)
+			if n < 0 {
+				return 0, 0, nil, false
+			}
+			msg = msg[n:]
+		default:
+			n = protowire.ConsumeFieldValue(num, typ, msg)
+			if n < 0 {
+				return 0, 0, nil, false
+			}
+			msg = msg[n:]
 		}
 
-		data, n := protowire.ConsumeBytes(msg)
-		if n < 0 {
-			return nil, false
-		}
-
-		_, _, _, _, ok := extractPortnumAndPayloadFromDecoded(data)
-		if !ok {
-			return nil, false
-		}
-
-		return data, true
 	}
+
+	_, _, _, _, ok = extractPortnumAndPayloadFromDecoded(payload)
+	if !ok {
+		return 0, 0, nil, false
+	}
+
+	return from, to, payload, true
 }
 
 func extractPortnumAndPayloadFromDecoded(data []byte) (portnum uint64, before, payload, after []byte, ok bool) {
