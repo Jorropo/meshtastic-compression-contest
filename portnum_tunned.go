@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/binary"
+	"fmt"
 	"log"
 
 	"github.com/Jorropo/meshtastic-compression-contest/unishox2"
@@ -9,13 +11,15 @@ import (
 
 const (
 	TEXT_MESSAGE_APP = 1
+	NODEINFO_APP     = 4
 	COMPRESSED       = 7
 )
 
 type compressorNum uint8
 
 const (
-	TEXT_MESSAGE_APP_COMPRESSOR compressorNum = 1
+	TEXT_MESSAGE_APP_COMPRESSOR compressorNum = iota + 1
+	NODEINFO_COMPRESSOR
 )
 
 func explodePacketForPortnumPayloadSubstitution(substitute func(portnum uint64, from, to uint32, payload []byte) (newPortnum uint64, newPayload []byte, changed bool)) compressor {
@@ -116,9 +120,204 @@ func compressPerPortnumTuned(portnum uint64, from, to uint32, payload []byte) (u
 		if err != nil {
 			log.Fatalf("unishox2 compression failed: %v", err)
 		}
+	case NODEINFO_APP:
+		portnum = COMPRESSED
+		compressedPortnum = NODEINFO_COMPRESSOR
+		var ok bool
+		compressedPayload, ok = nodeinfoCompression2(from, payload)
+		if !ok {
+			return 0, nil, false
+		}
 	default:
 		return 0, nil, false
 	}
 
 	return COMPRESSED, append([]byte{byte(compressedPortnum)}, compressedPayload...), true
+}
+
+func nodeinfoCompression2(from uint32, payload []byte) ([]byte, bool) {
+	// parse packet
+	var id []byte
+	var macaddress [6]byte
+	var shortname []byte
+	var hammode, isUnmessageable bool
+	var longname []byte
+	var eccpubkey [32]byte
+	var hwmodel uint64
+	var devicerole uint64
+
+	user := payload
+	for len(user) > 0 {
+		num, typ, n := protowire.ConsumeTag(user)
+		if n < 0 {
+			return nil, false
+		}
+		user = user[n:]
+
+		switch num {
+		case 1: // id
+			if typ != protowire.BytesType {
+				return nil, false
+			}
+			id, n = protowire.ConsumeBytes(user)
+			if n < 0 {
+				return nil, false
+			}
+			user = user[n:]
+		case 2: // long name
+			if typ != protowire.BytesType {
+				return nil, false
+			}
+			longname, n = protowire.ConsumeBytes(user)
+			if n < 0 {
+				return nil, false
+			}
+			user = user[n:]
+		case 3: // short name
+			if typ != protowire.BytesType {
+				return nil, false
+			}
+			shortname, n = protowire.ConsumeBytes(user)
+			if n < 0 {
+				return nil, false
+			}
+			user = user[n:]
+		case 4: // macaddress
+			if typ != protowire.BytesType {
+				return nil, false
+			}
+			v, n := protowire.ConsumeBytes(user)
+			if n < 0 || len(v) != len(macaddress) {
+				return nil, false
+			}
+			copy(macaddress[:], v)
+			user = user[n:]
+		case 5: // hw model
+			if typ != protowire.VarintType {
+				return nil, false
+			}
+			hwmodel, n = protowire.ConsumeVarint(user)
+			if n < 0 {
+				return nil, false
+			}
+			user = user[n:]
+		case 6: // is licensed
+			if typ != protowire.VarintType {
+				return nil, false
+			}
+			v, n := protowire.ConsumeVarint(user)
+			if n < 0 || (v != 0 && v != 1) {
+				return nil, false
+			}
+			user = user[n:]
+			hammode = protowire.DecodeBool(v)
+		case 7: // device role
+			if typ != protowire.VarintType {
+				return nil, false
+			}
+			devicerole, n = protowire.ConsumeVarint(user)
+			if n < 0 {
+				return nil, false
+			}
+			user = user[n:]
+		case 8: // ecc public key
+			if typ != protowire.BytesType {
+				return nil, false
+			}
+			v, n := protowire.ConsumeBytes(user)
+			if n < 0 || len(v) != len(eccpubkey) {
+				return nil, false
+			}
+			copy(eccpubkey[:], v)
+			user = user[n:]
+		case 9: // is unmessageable
+			if typ != protowire.VarintType {
+				return nil, false
+			}
+			v, n := protowire.ConsumeVarint(user)
+			if n < 0 || (v != 0 && v != 1) {
+				return nil, false
+			}
+			user = user[n:]
+			isUnmessageable = protowire.DecodeBool(v)
+		default:
+			return nil, false
+		}
+	}
+
+	// Format:
+	// 0khsssmi xullllll [1: id length |←: id payload ] [2: higher macaddress ] [4: lower macaddress ] [s: short name ] [l: long name ] [32: ecc public key ] [¿: varuint hwmodel ] [¿: varuint device role ]
+	// header bitfields:
+	//   0:
+	//     i - 0 = id default from source, 1 = id present // TODO: ever since 7c5e2bc95acf81a0997169e7a4243d2a0af963e7 nodes do not care about this field, just don't bother with it ?
+	//     m - 0 = lower macaddress default from source, 1 = lower macaddress present
+	//     sss - length of the short name (7 means default from source)
+	//     h - 1 = licensed ham mode, 0 = normal mode
+	//     k - 0 = no ecc public key, 1 = ecc public key present
+	//     0 - unishox2 is not used
+	//   1:
+	//     llllll - length of the long name (63 means default from source)
+	//     u - 1 = is unmessageable, 0 = normal
+	//     x - reserved for future use
+
+	compressed := make([]byte, 2, 256)
+
+	if hammode {
+		compressed[0] |= 1 << 5
+	}
+
+	if isUnmessageable {
+		compressed[1] |= 1 << 6
+	}
+
+	defaultID := fmt.Sprintf("!%08x", from)
+	if string(id) != defaultID {
+		compressed[0] |= 1 << 0
+		if len(id) >= 256 {
+			return nil, false
+		}
+		compressed = append(compressed, byte(len(id)))
+		compressed = append(compressed, id...)
+	}
+
+	compressed = append(compressed, macaddress[0:2]...)
+	if binary.BigEndian.Uint32(macaddress[2:]) != from {
+		compressed[0] |= 1 << 1
+		compressed = append(compressed, macaddress[:]...)
+	}
+
+	defaultShortname := fmt.Sprintf("%04x", from&0xffff)
+	if string(shortname) != defaultShortname {
+		if len(shortname) >= 7 {
+			return nil, false
+		}
+		compressed[0] |= byte(len(shortname)) << 2
+		compressed = append(compressed, shortname...)
+	} else {
+		compressed[0] |= 7 << 2
+	}
+
+	defaultLongName := fmt.Sprintf("Meshtastic %04x", from&0xffff)
+	if string(longname) != defaultLongName {
+		if len(longname) >= 63 {
+			return nil, false
+		}
+		compressed[1] |= byte(len(longname))
+		compressed = append(compressed, longname...)
+	} else {
+		compressed[1] |= 63
+	}
+
+	if eccpubkey != [32]byte{} {
+		compressed[0] |= 1 << 6
+		compressed = append(compressed, eccpubkey[:]...)
+	}
+
+	compressed = binary.AppendUvarint(compressed, hwmodel)
+
+	compressed = binary.AppendUvarint(compressed, devicerole)
+
+	return compressed, true
+
+	// TODO: implement mode with unishox2 compression for strings
 }

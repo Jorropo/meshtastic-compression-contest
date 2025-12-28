@@ -38,9 +38,9 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
+| `snowflake_Jorropo` | 0.8239 |
 | `unishox2_meshtastic` | 0.9987 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.9987 |
-| `snowflake_Jorropo` | 0.9988 |
 | `smaz_cespare_Jorropo` | 0.9990 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.9991 |
 | `shoco_FilePath_tmthrgd_Jorropo` | 0.9993 |
@@ -69,6 +69,12 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 The following graphs show the cumulative distribution function (CDF) of the reciprocal compression ratios for each compressor.
 
+### `snowflake_Jorropo`
+
+![snowflake_Jorropo only TEXT_MESSAGE_APP CDF](graphs/snowflake_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
+
+![snowflake_Jorropo CDF](graphs/snowflake_Jorropo_cdf.png)
+
 ### `unishox2_meshtastic`
 
 ![unishox2_meshtastic only TEXT_MESSAGE_APP CDF](graphs/unishox2_meshtastic_only_TEXT_MESSAGE_APP_cdf.png)
@@ -80,12 +86,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![shoco_TextEn_tmthrgd_Jorropo only TEXT_MESSAGE_APP CDF](graphs/shoco_TextEn_tmthrgd_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
 
 ![shoco_TextEn_tmthrgd_Jorropo CDF](graphs/shoco_TextEn_tmthrgd_Jorropo_cdf.png)
-
-### `snowflake_Jorropo`
-
-![snowflake_Jorropo only TEXT_MESSAGE_APP CDF](graphs/snowflake_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
-
-![snowflake_Jorropo CDF](graphs/snowflake_Jorropo_cdf.png)
 
 ### `smaz_cespare_Jorropo`
 
