@@ -249,8 +249,18 @@ func nodeinfoCompression2(from uint32, payload []byte) ([]byte, bool) {
 		}
 	}
 
+	// [l: example]
+	// means an optional field in the byte stream with length l and content example
+	// <l: example>
+	// means an optional field in the string stream with length l and content example
+
 	// Format:
-	// 0khsssmi xullllll [1: id length |←: id payload ] [2: higher macaddress ] [4: lower macaddress ] [s: short name ] [l: long name ] [32: ecc public key ] [¿: varuint hwmodel ] [¿: varuint device role ]
+	// 1lllllll [l: unishox payload] ...
+	//   1 - unishox2 is used
+	//       when using unixhox2, all strings are stored in the unishox decompressed payload in the order they appear bellow.
+	//       when not using unishox2 the strings are mixed in the byte stream as bellow.
+	//   ... - same format as the uncompressed version, but without the strings mixed in:
+	// 0khsssmi xullllll [1: id length ] <←: id payload > [2: higher macaddress ] [4: lower macaddress ] <s: short name > <l: long name > [32: ecc public key ] [¿: varuint hwmodel ] [¿: varuint device role ]
 	// header bitfields:
 	//   0:
 	//     i - 0 = id default from source, 1 = id present // TODO: ever since 7c5e2bc95acf81a0997169e7a4243d2a0af963e7 nodes do not care about this field, just don't bother with it ?
@@ -264,64 +274,92 @@ func nodeinfoCompression2(from uint32, payload []byte) ([]byte, bool) {
 	//     u - 1 = is unmessageable, 0 = normal
 	//     x - reserved for future use
 
-	compressed := make([]byte, 2, 256)
+	var header [2]byte
+	binaryWithoutUnishox := make([]byte, 0, 256)
+	binaryWithUnishox := make([]byte, 0, 256)
+	stringsWithUnishox := make([]byte, 0, 256)
 
-	if hammode {
-		compressed[0] |= 1 << 5
-	}
-
-	if isUnmessageable {
-		compressed[1] |= 1 << 6
-	}
-
-	defaultID := fmt.Sprintf("!%08x", from)
-	if string(id) != defaultID {
-		compressed[0] |= 1 << 0
-		if len(id) >= 256 {
-			return nil, false
+	{
+		if hammode {
+			header[0] |= 1 << 5
 		}
-		compressed = append(compressed, byte(len(id)))
-		compressed = append(compressed, id...)
-	}
 
-	compressed = append(compressed, macaddress[0:2]...)
-	if binary.BigEndian.Uint32(macaddress[2:]) != from {
-		compressed[0] |= 1 << 1
-		compressed = append(compressed, macaddress[:]...)
-	}
-
-	defaultShortname := fmt.Sprintf("%04x", from&0xffff)
-	if string(shortname) != defaultShortname {
-		if len(shortname) >= 7 {
-			return nil, false
+		if isUnmessageable {
+			header[1] |= 1 << 6
 		}
-		compressed[0] |= byte(len(shortname)) << 2
-		compressed = append(compressed, shortname...)
+
+		defaultID := fmt.Sprintf("!%08x", from)
+		if string(id) != defaultID {
+			header[0] |= 1 << 0
+			if len(id) >= 256 {
+				return nil, false
+			}
+			binaryWithoutUnishox = append(binaryWithoutUnishox, byte(len(id)))
+			binaryWithUnishox = append(binaryWithUnishox, byte(len(id)))
+			binaryWithoutUnishox = append(binaryWithoutUnishox, id...)
+			stringsWithUnishox = append(stringsWithUnishox, id...)
+		}
+
+		binaryWithoutUnishox = append(binaryWithoutUnishox, macaddress[0:2]...)
+		binaryWithUnishox = append(binaryWithUnishox, macaddress[0:2]...)
+		if binary.BigEndian.Uint32(macaddress[2:]) != from {
+			header[0] |= 1 << 1
+			binaryWithoutUnishox = append(binaryWithoutUnishox, macaddress[:]...)
+			binaryWithUnishox = append(binaryWithUnishox, macaddress[:]...)
+		}
+
+		defaultShortname := fmt.Sprintf("%04x", from&0xffff)
+		if string(shortname) != defaultShortname {
+			if len(shortname) >= 7 {
+				return nil, false
+			}
+			header[0] |= byte(len(shortname)) << 2
+			binaryWithoutUnishox = append(binaryWithoutUnishox, shortname...)
+			stringsWithUnishox = append(stringsWithUnishox, shortname...)
+		} else {
+			header[0] |= 7 << 2
+		}
+
+		defaultLongName := fmt.Sprintf("Meshtastic %04x", from&0xffff)
+		if string(longname) != defaultLongName {
+			if len(longname) >= 63 {
+				return nil, false
+			}
+			header[1] |= byte(len(longname))
+			binaryWithoutUnishox = append(binaryWithoutUnishox, longname...)
+			stringsWithUnishox = append(stringsWithUnishox, longname...)
+		} else {
+			header[1] |= 63
+		}
+
+		if eccpubkey != [32]byte{} {
+			header[0] |= 1 << 6
+			binaryWithoutUnishox = append(binaryWithoutUnishox, eccpubkey[:]...)
+			binaryWithUnishox = append(binaryWithUnishox, eccpubkey[:]...)
+		}
+
+		binaryWithoutUnishox = binary.AppendUvarint(binaryWithoutUnishox, hwmodel)
+		binaryWithUnishox = binary.AppendUvarint(binaryWithUnishox, hwmodel)
+
+		binaryWithoutUnishox = binary.AppendUvarint(binaryWithoutUnishox, devicerole)
+		binaryWithUnishox = binary.AppendUvarint(binaryWithUnishox, devicerole)
+	}
+
+	unishoxPayload, err := unishox2.CompressSimple(stringsWithUnishox)
+	if err != nil {
+		log.Fatalf("unishox2 compression failed: %v", err)
+	}
+
+	compressed := make([]byte, 0, 256)
+	if unishoxIsSmaller := 1+len(unishoxPayload)+len(header)+len(binaryWithUnishox) < len(header)+len(binaryWithoutUnishox); len(unishoxPayload) <= 127 && unishoxIsSmaller {
+		compressed = append(compressed, 1<<7|byte(len(unishoxPayload)))
+		compressed = append(compressed, unishoxPayload...)
+		compressed = append(compressed, header[:]...)
+		compressed = append(compressed, binaryWithUnishox...)
 	} else {
-		compressed[0] |= 7 << 2
+		compressed = append(compressed, header[:]...)
+		compressed = append(compressed, binaryWithoutUnishox...)
 	}
-
-	defaultLongName := fmt.Sprintf("Meshtastic %04x", from&0xffff)
-	if string(longname) != defaultLongName {
-		if len(longname) >= 63 {
-			return nil, false
-		}
-		compressed[1] |= byte(len(longname))
-		compressed = append(compressed, longname...)
-	} else {
-		compressed[1] |= 63
-	}
-
-	if eccpubkey != [32]byte{} {
-		compressed[0] |= 1 << 6
-		compressed = append(compressed, eccpubkey[:]...)
-	}
-
-	compressed = binary.AppendUvarint(compressed, hwmodel)
-
-	compressed = binary.AppendUvarint(compressed, devicerole)
 
 	return compressed, true
-
-	// TODO: implement mode with unishox2 compression for strings
 }
