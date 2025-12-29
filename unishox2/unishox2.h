@@ -36,13 +36,12 @@
  * Macro switch to enable/disable output buffer length parameter in low level api \n
  * Disabled by default \n
  * When this macro is defined, the all the API functions \n
- * except the simple API functions accept an additional parameter olen \n
+ * accept an additional parameter olen \n
  * that enables the developer to pass the size of the output buffer provided \n
  * so that the api function may not write beyond that length. \n
  * This can be disabled if the developer knows that the buffer provided is sufficient enough \n
  * so no additional parameter is passed and the program is faster since additional check \n
  * for output length is not performed at each step \n
- * The simple api, i.e. unishox2_(de)compress_simple will always omit the buffer length
  */
 #ifndef UNISHOX_API_WITH_OUTPUT_LEN
 #  define UNISHOX_API_WITH_OUTPUT_LEN 1
@@ -175,7 +174,7 @@ struct us_lnk_lst {
 /**
  * This macro is for internal use, but builds upon the macro UNISHOX_API_WITH_OUTPUT_LEN
  * When the macro UNISHOX_API_WITH_OUTPUT_LEN is defined, the all the API functions
- * except the simple API functions accept an additional parameter olen
+ * accept an additional parameter olen
  * that enables the developer to pass the size of the output buffer provided
  * so that the api function may not write beyond that length.
  * This can be disabled if the developer knows that the buffer provided is sufficient enough
@@ -189,20 +188,6 @@ struct us_lnk_lst {
 #  define UNISHOX_API_OUT_AND_LEN(out, olen) out
 #endif
 
-/** 
- * Simple API for compressing a string
- * @param[in] in    Input ASCII / UTF-8 string
- * @param[in] len   length in bytes
- * @param[out] out  output buffer - should be large enough to hold compressed output
- */
-extern int unishox2_compress_simple(const char *in, int len, char *out);
-/** 
- * Simple API for decompressing a string
- * @param[in] in    Input compressed bytes (output of unishox2_compress functions)
- * @param[in] len   length of 'in' in bytes
- * @param[out] out  output buffer for ASCII / UTF-8 string - should be large enough
- */
-extern int unishox2_decompress_simple(const char *in, int len, char *out);
 /** 
  * Comprehensive API for compressing a string
  * 

@@ -855,11 +855,6 @@ int unishox2_compress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out
   return unishox2_compress_lines(in, len, UNISHOX_API_OUT_AND_LEN(out, olen), usx_hcodes, usx_hcode_lens, usx_freq_seq, usx_templates, NULL);
 }
 
-// Main API function. See unishox2.h for documentation
-int unishox2_compress_simple(const char *in, int len, char *out) {
-  return unishox2_compress_lines(in, len, UNISHOX_API_OUT_AND_LEN(out, INT_MAX - 1), USX_HCODES_DFLT, USX_HCODE_LENS_DFLT, USX_FREQ_SEQ_DFLT, USX_TEMPLATES, NULL);
-}
-
 // Reads one bit from in
 int readBit(const char *in, int bit_no) {
    return in[bit_no >> 3] & (0x80 >> (bit_no % 8));
@@ -1377,9 +1372,4 @@ int unishox2_decompress_lines(const char *in, int len, UNISHOX_API_OUT_AND_LEN(c
 // Main API function. See unishox2.h for documentation
 int unishox2_decompress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[]) {
   return unishox2_decompress_lines(in, len, UNISHOX_API_OUT_AND_LEN(out, olen), usx_hcodes, usx_hcode_lens, usx_freq_seq, usx_templates, NULL);
-}
-
-// Main API function. See unishox2.h for documentation
-int unishox2_decompress_simple(const char *in, int len, char *out) {
-  return unishox2_decompress(in, len, UNISHOX_API_OUT_AND_LEN(out, INT_MAX - 1), USX_PSET_DFLT);
 }
