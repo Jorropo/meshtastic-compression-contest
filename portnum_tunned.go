@@ -119,11 +119,12 @@ func compressPerPortnumTuned(portnum uint64, from, to uint32, payload []byte) (u
 	case TEXT_MESSAGE_APP:
 		portnum = COMPRESSED
 		compressedPortnum = TEXT_MESSAGE_APP_COMPRESSOR
-		var err error
-		compressedPayload, err = unishox2.CompressAlphaOnly(payload, "")
-		if err != nil {
-			log.Fatalf("unishox2 compression failed: %v", err)
+		var output [256]byte
+		n := unishox2.CompressAlphaOnly(payload, output[:], "", 0)
+		if n < 0 {
+			log.Fatalf("unishox2 compression failed")
 		}
+		compressedPayload = output[:n]
 	case NODEINFO_APP:
 		portnum = COMPRESSED
 		compressedPortnum = NODEINFO_COMPRESSOR
@@ -343,10 +344,12 @@ func nodeinfoCompression2(from uint32, payload []byte) ([]byte, bool) {
 		binaryWithUnishox = binary.AppendUvarint(binaryWithUnishox, devicerole)
 	}
 
-	unishoxPayload, err := unishox2.CompressAlphaOnly(stringsWithUnishox, "")
-	if err != nil {
-		log.Fatalf("unishox2 compression failed: %v", err)
+	var output [256]byte
+	n := unishox2.CompressAlphaOnly(stringsWithUnishox, output[:], "", 0)
+	if n < 0 {
+		log.Fatalf("unishox2 compression failed")
 	}
+	unishoxPayload := output[:n]
 
 	compressed := make([]byte, 0, 256)
 	if unishoxIsSmaller := len(unishoxPayload)+len(header)+len(binaryWithUnishox) < len(header)+len(binaryWithoutUnishox); len(unishoxPayload) <= 127 && unishoxIsSmaller {

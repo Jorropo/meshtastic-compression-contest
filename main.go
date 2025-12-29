@@ -13,6 +13,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
+	"math/bits"
 	"math/rand/v2"
 	"os"
 	"runtime"
@@ -33,6 +35,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
+	"github.com/Jorropo/meshtastic-compression-contest/unishox2"
 	"github.com/cespare/go-smaz"
 	cloudflare_lz4 "github.com/cloudflare/golz4"
 	"github.com/inkyblackness/res/compress/rle"
@@ -43,8 +46,6 @@ import (
 	klauspost_zlib "github.com/klauspost/compress/zlib"
 	"github.com/pierrec/lz4/v4"
 	shoco_models "github.com/tmthrgd/shoco/models"
-
-	"github.com/Jorropo/meshtastic-compression-contest/unishox2"
 )
 
 const zeroRatio = 2
@@ -141,23 +142,6 @@ func main() {
 			w.Close()
 			return b.Bytes()
 		}),
-		"unishox2_default":                 compressUnishoxNoDelta(unishox2.CompressDefault), // copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
-		"unishox2_alpha_only":              compressUnishoxNoDelta(unishox2.CompressAlphaOnly),
-		"unishox2_alpha_num_only":          compressUnishoxNoDelta(unishox2.CompressAlphaNumOnly),
-		"unishox2_alpha_num_sym_only":      compressUnishoxNoDelta(unishox2.CompressAlphaNumSymOnly),
-		"unishox2_alpha_num_sym_only_text": compressUnishoxNoDelta(unishox2.CompressAlphaNumSymOnlyText),
-		"unishox2_favor_alpha":             compressUnishoxNoDelta(unishox2.CompressFavorAlpha),
-		"unishox2_favor_dict":              compressUnishoxNoDelta(unishox2.CompressFavorDict),
-		"unishox2_favor_sym":               compressUnishoxNoDelta(unishox2.CompressFavorSym),
-		"unishox2_favor_umlaut":            compressUnishoxNoDelta(unishox2.CompressFavorUmlaut),
-		"unishox2_no_dict":                 compressUnishoxNoDelta(unishox2.CompressNoDict),
-		"unishox2_no_uni":                  compressUnishoxNoDelta(unishox2.CompressNoUni),
-		"unishox2_no_uni_favor_text":       compressUnishoxNoDelta(unishox2.CompressNoUniFavorText),
-		"unishox2_url":                     compressUnishoxNoDelta(unishox2.CompressURL),
-		"unishox2_json":                    compressUnishoxNoDelta(unishox2.CompressJSON),
-		"unishox2_json_no_uni":             compressUnishoxNoDelta(unishox2.CompressJSONNoUni),
-		"unishox2_xml":                     compressUnishoxNoDelta(unishox2.CompressXML),
-		"unishox2_html":                    compressUnishoxNoDelta(unishox2.CompressHTML),
 		"rle_inkyblackness": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			rle.Compress(&b, data)
@@ -214,6 +198,63 @@ func main() {
 			return shoco_models.Emails().ProposedCompress(data)
 		}),
 		"snowflake_Jorropo": explodePacketForPortnumPayloadSubstitution(compressPerPortnumTuned),
+	}
+
+	type unishoxPair struct {
+		name string
+		comp func([]byte, []byte, string, uint8) int
+	}
+
+	unishox := []unishoxPair{
+		{"default", unishox2.CompressDefault}, // copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
+		{"alpha_only", unishox2.CompressAlphaOnly},
+		{"alpha_num_only", unishox2.CompressAlphaNumOnly},
+		{"alpha_num_sym_only", unishox2.CompressAlphaNumSymOnly},
+		{"alpha_num_sym_only_text", unishox2.CompressAlphaNumSymOnlyText},
+		{"favor_alpha", unishox2.CompressFavorAlpha},
+		{"favor_dict", unishox2.CompressFavorDict},
+		{"favor_sym", unishox2.CompressFavorSym},
+		{"favor_umlaut", unishox2.CompressFavorUmlaut},
+		{"no_dict", unishox2.CompressNoDict},
+		{"no_uni", unishox2.CompressNoUni},
+		{"no_uni_favor_text", unishox2.CompressNoUniFavorText},
+		{"url", unishox2.CompressURL},
+		{"json", unishox2.CompressJSON},
+		{"json_no_uni", unishox2.CompressJSONNoUni},
+		{"xml", unishox2.CompressXML},
+		{"html", unishox2.CompressHTML},
+	}
+	for set := range pow2AllSetsAndAllAllSets(unishox) {
+		var nameParts []string
+		var compFuncs []func([]byte, []byte, string, uint8) int
+		for _, unishox := range set {
+			nameParts = append(nameParts, unishox.name)
+			compFuncs = append(compFuncs, unishox.comp)
+		}
+
+		name := "unishox2_" + strings.Join(nameParts, "|")
+
+		bits := uint8(bits.Len(uint(len(compFuncs)) - 1))
+		compressors[name] = compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+			var output [256]byte
+			outputLen := math.MaxInt
+
+			unishoxBits := 8 - bits
+			for i, c := range compFuncs {
+				var tmpOutput [256]byte
+				tmpOutputLen := c(data, output[:], "", bits)
+				if tmpOutputLen < 0 {
+					panic("unishox2 compression error")
+				}
+				if tmpOutputLen < outputLen {
+					outputLen = tmpOutputLen
+					output = tmpOutput
+					output[0] |= byte(i) << unishoxBits
+				}
+			}
+
+			return output[:outputLen]
+		})
 	}
 
 	type resultPair struct {
@@ -304,16 +345,6 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 	if _, err := README.WriteTo(f); err != nil {
 		log.Fatalf("Error writing to README.md: %v", err)
 	}
-}
-
-func compressUnishoxNoDelta(comp func([]byte, string) ([]byte, error)) compressor {
-	return compressorOnlyTextMessageAppContent(func(data []byte) []byte {
-		compressedPayload, err := comp(data, "")
-		if err != nil {
-			log.Fatalf("Compressing with unishox2: %v", err)
-		}
-		return compressedPayload
-	})
 }
 
 func compressJustBytes(comp func([]byte) []byte) compressor {
