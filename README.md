@@ -38,7 +38,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
-| `snowflake_Jorropo` | 0.8113 |
+| `snowflake_Jorropo` | 0.8064 |
 | `unishox2_meshtastic` | 0.9986 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.9987 |
 | `smaz_cespare_Jorropo` | 0.9989 |

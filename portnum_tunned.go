@@ -255,12 +255,7 @@ func nodeinfoCompression2(from uint32, payload []byte) ([]byte, bool) {
 	// means an optional field in the string stream with length l and content example
 
 	// Format:
-	// 1lllllll [l: unishox payload] ...
-	//   1 - unishox2 is used
-	//       when using unixhox2, all strings are stored in the unishox decompressed payload in the order they appear bellow.
-	//       when not using unishox2 the strings are mixed in the byte stream as bellow.
-	//   ... - same format as the uncompressed version, but without the strings mixed in:
-	// 0khsssmi xullllll [1: id length ] <←: id payload > [2: higher macaddress ] [4: lower macaddress ] <s: short name > <l: long name > [32: ecc public key ] [¿: varuint hwmodel ] [¿: varuint device role ]
+	// ckhsssmi xullllll [l: unishox payload] [1: id length ] <←: id payload > [2: higher macaddress ] [4: lower macaddress ] <s: short name > <l: long name > [32: ecc public key ] [¿: varuint hwmodel ] [¿: varuint device role ]
 	// header bitfields:
 	//   0:
 	//     i - 0 = id default from source, 1 = id present // TODO: ever since 7c5e2bc95acf81a0997169e7a4243d2a0af963e7 nodes do not care about this field, just don't bother with it ?
@@ -268,7 +263,10 @@ func nodeinfoCompression2(from uint32, payload []byte) ([]byte, bool) {
 	//     sss - length of the short name (7 means default from source)
 	//     h - 1 = licensed ham mode, 0 = normal mode
 	//     k - 0 = no ecc public key, 1 = ecc public key present
-	//     0 - unishox2 is not used
+	//     c - unishox2 compression
+	//         when using unixhox2, all strings are stored in the unishox decompressed payload in the order they appear bellow.
+	//         when not using unishox2 the strings are mixed in the byte stream as bellow.
+	//   ... - same format as the uncompressed version, but without the strings mixed in:
 	//   1:
 	//     llllll - length of the long name (63 means default from source)
 	//     u - 1 = is unmessageable, 0 = normal
@@ -351,10 +349,9 @@ func nodeinfoCompression2(from uint32, payload []byte) ([]byte, bool) {
 	}
 
 	compressed := make([]byte, 0, 256)
-	if unishoxIsSmaller := 1+len(unishoxPayload)+len(header)+len(binaryWithUnishox) < len(header)+len(binaryWithoutUnishox); len(unishoxPayload) <= 127 && unishoxIsSmaller {
-		compressed = append(compressed, 1<<7|byte(len(unishoxPayload)))
-		compressed = append(compressed, unishoxPayload...)
+	if unishoxIsSmaller := len(unishoxPayload)+len(header)+len(binaryWithUnishox) < len(header)+len(binaryWithoutUnishox); len(unishoxPayload) <= 127 && unishoxIsSmaller {
 		compressed = append(compressed, header[:]...)
+		compressed = append(compressed, unishoxPayload...)
 		compressed = append(compressed, binaryWithUnishox...)
 	} else {
 		compressed = append(compressed, header[:]...)
