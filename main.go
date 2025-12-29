@@ -141,14 +141,23 @@ func main() {
 			w.Close()
 			return b.Bytes()
 		}),
-		"unishox2_meshtastic": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
-			// copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
-			compressedPayload, err := unishox2.CompressDefault(data, "")
-			if err != nil {
-				log.Fatalf("Compressing with unishox2: %v", err)
-			}
-			return compressedPayload
-		}),
+		"unishox2_default":                 compressUnishoxNoDelta(unishox2.CompressDefault), // copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
+		"unishox2_alpha_only":              compressUnishoxNoDelta(unishox2.CompressAlphaOnly),
+		"unishox2_alpha_num_only":          compressUnishoxNoDelta(unishox2.CompressAlphaNumOnly),
+		"unishox2_alpha_num_sym_only":      compressUnishoxNoDelta(unishox2.CompressAlphaNumSymOnly),
+		"unishox2_alpha_num_sym_only_text": compressUnishoxNoDelta(unishox2.CompressAlphaNumSymOnlyText),
+		"unishox2_favor_alpha":             compressUnishoxNoDelta(unishox2.CompressFavorAlpha),
+		"unishox2_favor_dict":              compressUnishoxNoDelta(unishox2.CompressFavorDict),
+		"unishox2_favor_sym":               compressUnishoxNoDelta(unishox2.CompressFavorSym),
+		"unishox2_favor_umlaut":            compressUnishoxNoDelta(unishox2.CompressFavorUmlaut),
+		"unishox2_no_dict":                 compressUnishoxNoDelta(unishox2.CompressNoDict),
+		"unishox2_no_uni":                  compressUnishoxNoDelta(unishox2.CompressNoUni),
+		"unishox2_no_uni_favor_text":       compressUnishoxNoDelta(unishox2.CompressNoUniFavorText),
+		"unishox2_url":                     compressUnishoxNoDelta(unishox2.CompressURL),
+		"unishox2_json":                    compressUnishoxNoDelta(unishox2.CompressJSON),
+		"unishox2_json_no_uni":             compressUnishoxNoDelta(unishox2.CompressJSONNoUni),
+		"unishox2_xml":                     compressUnishoxNoDelta(unishox2.CompressXML),
+		"unishox2_html":                    compressUnishoxNoDelta(unishox2.CompressHTML),
 		"rle_inkyblackness": compressJustBytes(func(data []byte) []byte {
 			var b bytes.Buffer
 			rle.Compress(&b, data)
@@ -295,6 +304,16 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 	if _, err := README.WriteTo(f); err != nil {
 		log.Fatalf("Error writing to README.md: %v", err)
 	}
+}
+
+func compressUnishoxNoDelta(comp func([]byte, string) ([]byte, error)) compressor {
+	return compressorOnlyTextMessageAppContent(func(data []byte) []byte {
+		compressedPayload, err := comp(data, "")
+		if err != nil {
+			log.Fatalf("Compressing with unishox2: %v", err)
+		}
+		return compressedPayload
+	})
 }
 
 func compressJustBytes(comp func([]byte) []byte) compressor {

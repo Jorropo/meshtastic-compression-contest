@@ -9,9 +9,25 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
 |------------|--------------------------------------------------------------|
-| `unishox2_meshtastic` | 0.7542 |
+| `unishox2_alpha_only` | 0.6976 |
+| `snowflake_Jorropo` | 0.7196 |
+| `unishox2_alpha_num_only` | 0.7325 |
+| `unishox2_favor_alpha` | 0.7432 |
+| `unishox2_no_uni_favor_text` | 0.7432 |
+| `unishox2_no_uni` | 0.7515 |
+| `unishox2_url` | 0.7519 |
+| `unishox2_json_no_uni` | 0.7523 |
+| `unishox2_alpha_num_sym_only` | 0.7534 |
+| `unishox2_alpha_num_sym_only_text` | 0.7534 |
+| `unishox2_default` | 0.7542 |
+| `unishox2_xml` | 0.7542 |
+| `unishox2_html` | 0.7549 |
+| `unishox2_json` | 0.7549 |
+| `unishox2_favor_dict` | 0.7568 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.7606 |
-| `snowflake_Jorropo` | 0.7747 |
+| `unishox2_favor_sym` | 0.7614 |
+| `unishox2_favor_umlaut` | 0.7618 |
+| `unishox2_no_dict` | 0.7622 |
 | `smaz_cespare_Jorropo` | 0.7998 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.8351 |
 | `shoco_TextEn_tmthrgd` | 0.8419 |
@@ -38,9 +54,25 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
-| `snowflake_Jorropo` | 0.8054 |
-| `unishox2_meshtastic` | 0.9986 |
+| `snowflake_Jorropo` | 0.7837 |
+| `unishox2_alpha_only` | 0.9983 |
+| `unishox2_alpha_num_only` | 0.9985 |
+| `unishox2_favor_alpha` | 0.9986 |
+| `unishox2_no_uni_favor_text` | 0.9986 |
+| `unishox2_no_uni` | 0.9986 |
+| `unishox2_url` | 0.9986 |
+| `unishox2_json_no_uni` | 0.9986 |
+| `unishox2_alpha_num_sym_only` | 0.9986 |
+| `unishox2_alpha_num_sym_only_text` | 0.9986 |
+| `unishox2_default` | 0.9986 |
+| `unishox2_xml` | 0.9986 |
+| `unishox2_html` | 0.9986 |
+| `unishox2_json` | 0.9986 |
+| `unishox2_favor_dict` | 0.9986 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.9987 |
+| `unishox2_favor_sym` | 0.9987 |
+| `unishox2_favor_umlaut` | 0.9987 |
+| `unishox2_no_dict` | 0.9987 |
 | `smaz_cespare_Jorropo` | 0.9989 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.9991 |
 | `shoco_FilePath_tmthrgd_Jorropo` | 0.9993 |
@@ -75,17 +107,113 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 
 ![snowflake_Jorropo CDF](graphs/snowflake_Jorropo_cdf.png)
 
-### `unishox2_meshtastic`
+### `unishox2_alpha_only`
 
-![unishox2_meshtastic only TEXT_MESSAGE_APP CDF](graphs/unishox2_meshtastic_only_TEXT_MESSAGE_APP_cdf.png)
+![unishox2_alpha_only only TEXT_MESSAGE_APP CDF](graphs/unishox2_alpha_only_only_TEXT_MESSAGE_APP_cdf.png)
 
-![unishox2_meshtastic CDF](graphs/unishox2_meshtastic_cdf.png)
+![unishox2_alpha_only CDF](graphs/unishox2_alpha_only_cdf.png)
+
+### `unishox2_alpha_num_only`
+
+![unishox2_alpha_num_only only TEXT_MESSAGE_APP CDF](graphs/unishox2_alpha_num_only_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_alpha_num_only CDF](graphs/unishox2_alpha_num_only_cdf.png)
+
+### `unishox2_favor_alpha`
+
+![unishox2_favor_alpha only TEXT_MESSAGE_APP CDF](graphs/unishox2_favor_alpha_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_favor_alpha CDF](graphs/unishox2_favor_alpha_cdf.png)
+
+### `unishox2_no_uni_favor_text`
+
+![unishox2_no_uni_favor_text only TEXT_MESSAGE_APP CDF](graphs/unishox2_no_uni_favor_text_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_no_uni_favor_text CDF](graphs/unishox2_no_uni_favor_text_cdf.png)
+
+### `unishox2_no_uni`
+
+![unishox2_no_uni only TEXT_MESSAGE_APP CDF](graphs/unishox2_no_uni_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_no_uni CDF](graphs/unishox2_no_uni_cdf.png)
+
+### `unishox2_url`
+
+![unishox2_url only TEXT_MESSAGE_APP CDF](graphs/unishox2_url_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_url CDF](graphs/unishox2_url_cdf.png)
+
+### `unishox2_json_no_uni`
+
+![unishox2_json_no_uni only TEXT_MESSAGE_APP CDF](graphs/unishox2_json_no_uni_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_json_no_uni CDF](graphs/unishox2_json_no_uni_cdf.png)
+
+### `unishox2_alpha_num_sym_only`
+
+![unishox2_alpha_num_sym_only only TEXT_MESSAGE_APP CDF](graphs/unishox2_alpha_num_sym_only_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_alpha_num_sym_only CDF](graphs/unishox2_alpha_num_sym_only_cdf.png)
+
+### `unishox2_alpha_num_sym_only_text`
+
+![unishox2_alpha_num_sym_only_text only TEXT_MESSAGE_APP CDF](graphs/unishox2_alpha_num_sym_only_text_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_alpha_num_sym_only_text CDF](graphs/unishox2_alpha_num_sym_only_text_cdf.png)
+
+### `unishox2_default`
+
+![unishox2_default only TEXT_MESSAGE_APP CDF](graphs/unishox2_default_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_default CDF](graphs/unishox2_default_cdf.png)
+
+### `unishox2_xml`
+
+![unishox2_xml only TEXT_MESSAGE_APP CDF](graphs/unishox2_xml_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_xml CDF](graphs/unishox2_xml_cdf.png)
+
+### `unishox2_html`
+
+![unishox2_html only TEXT_MESSAGE_APP CDF](graphs/unishox2_html_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_html CDF](graphs/unishox2_html_cdf.png)
+
+### `unishox2_json`
+
+![unishox2_json only TEXT_MESSAGE_APP CDF](graphs/unishox2_json_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_json CDF](graphs/unishox2_json_cdf.png)
+
+### `unishox2_favor_dict`
+
+![unishox2_favor_dict only TEXT_MESSAGE_APP CDF](graphs/unishox2_favor_dict_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_favor_dict CDF](graphs/unishox2_favor_dict_cdf.png)
 
 ### `shoco_TextEn_tmthrgd_Jorropo`
 
 ![shoco_TextEn_tmthrgd_Jorropo only TEXT_MESSAGE_APP CDF](graphs/shoco_TextEn_tmthrgd_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
 
 ![shoco_TextEn_tmthrgd_Jorropo CDF](graphs/shoco_TextEn_tmthrgd_Jorropo_cdf.png)
+
+### `unishox2_favor_sym`
+
+![unishox2_favor_sym only TEXT_MESSAGE_APP CDF](graphs/unishox2_favor_sym_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_favor_sym CDF](graphs/unishox2_favor_sym_cdf.png)
+
+### `unishox2_favor_umlaut`
+
+![unishox2_favor_umlaut only TEXT_MESSAGE_APP CDF](graphs/unishox2_favor_umlaut_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_favor_umlaut CDF](graphs/unishox2_favor_umlaut_cdf.png)
+
+### `unishox2_no_dict`
+
+![unishox2_no_dict only TEXT_MESSAGE_APP CDF](graphs/unishox2_no_dict_only_TEXT_MESSAGE_APP_cdf.png)
+
+![unishox2_no_dict CDF](graphs/unishox2_no_dict_cdf.png)
 
 ### `smaz_cespare_Jorropo`
 
