@@ -12,7 +12,7 @@ int compressDefault(const char *in, int len, char *out, int olen, char *previous
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_DFLT, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_DFLT, prev_lines_ptr, 0);
 }
 int decompressDefault(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -21,7 +21,7 @@ int decompressDefault(const char *in, int len, char *out, int olen, char *previo
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_DFLT, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_DFLT, prev_lines_ptr, 0);
 }
 
 int compressAlphaOnly(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -31,7 +31,7 @@ int compressAlphaOnly(const char *in, int len, char *out, int olen, char *previo
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_ONLY, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_ONLY, prev_lines_ptr, 0);
 }
 int decompressAlphaOnly(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -40,7 +40,7 @@ int decompressAlphaOnly(const char *in, int len, char *out, int olen, char *prev
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_ONLY, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_ONLY, prev_lines_ptr, 0);
 }
 
 int compressAlphaNumOnly(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -50,7 +50,7 @@ int compressAlphaNumOnly(const char *in, int len, char *out, int olen, char *pre
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_ONLY, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_ONLY, prev_lines_ptr, 0);
 }
 int decompressAlphaNumOnly(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -59,7 +59,7 @@ int decompressAlphaNumOnly(const char *in, int len, char *out, int olen, char *p
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_ONLY, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_ONLY, prev_lines_ptr, 0);
 }
 
 int compressAlphaNumSymOnly(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -69,7 +69,7 @@ int compressAlphaNumSymOnly(const char *in, int len, char *out, int olen, char *
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY, prev_lines_ptr, 0);
 }
 int decompressAlphaNumSymOnly(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -78,7 +78,7 @@ int decompressAlphaNumSymOnly(const char *in, int len, char *out, int olen, char
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY, prev_lines_ptr, 0);
 }
 
 int compressAlphaNumSymOnlyText(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -88,7 +88,7 @@ int compressAlphaNumSymOnlyText(const char *in, int len, char *out, int olen, ch
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY_TXT, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY_TXT, prev_lines_ptr, 0);
 }
 int decompressAlphaNumSymOnlyText(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -97,7 +97,7 @@ int decompressAlphaNumSymOnlyText(const char *in, int len, char *out, int olen, 
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY_TXT, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_ALPHA_NUM_SYM_ONLY_TXT, prev_lines_ptr, 0);
 }
 
 int compressFavorAlpha(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -107,7 +107,7 @@ int compressFavorAlpha(const char *in, int len, char *out, int olen, char *previ
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_ALPHA, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_ALPHA, prev_lines_ptr, 0);
 }
 int decompressFavorAlpha(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -116,7 +116,7 @@ int decompressFavorAlpha(const char *in, int len, char *out, int olen, char *pre
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_ALPHA, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_ALPHA, prev_lines_ptr, 0);
 }
 
 int compressFavorDict(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -126,7 +126,7 @@ int compressFavorDict(const char *in, int len, char *out, int olen, char *previo
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_DICT, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_DICT, prev_lines_ptr, 0);
 }
 int decompressFavorDict(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -135,7 +135,7 @@ int decompressFavorDict(const char *in, int len, char *out, int olen, char *prev
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_DICT, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_DICT, prev_lines_ptr, 0);
 }
 
 int compressFavorSym(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -145,7 +145,7 @@ int compressFavorSym(const char *in, int len, char *out, int olen, char *previou
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_SYM, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_SYM, prev_lines_ptr, 0);
 }
 int decompressFavorSym(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -154,7 +154,7 @@ int decompressFavorSym(const char *in, int len, char *out, int olen, char *previ
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_SYM, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_SYM, prev_lines_ptr, 0);
 }
 
 int compressFavorUmlaut(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -164,7 +164,7 @@ int compressFavorUmlaut(const char *in, int len, char *out, int olen, char *prev
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_UMLAUT, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_FAVOR_UMLAUT, prev_lines_ptr, 0);
 }
 int decompressFavorUmlaut(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -173,7 +173,7 @@ int decompressFavorUmlaut(const char *in, int len, char *out, int olen, char *pr
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_UMLAUT, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_FAVOR_UMLAUT, prev_lines_ptr, 0);
 }
 
 int compressNoDict(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -183,7 +183,7 @@ int compressNoDict(const char *in, int len, char *out, int olen, char *previous_
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_NO_DICT, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_NO_DICT, prev_lines_ptr, 0);
 }
 int decompressNoDict(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -192,7 +192,7 @@ int decompressNoDict(const char *in, int len, char *out, int olen, char *previou
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_NO_DICT, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_NO_DICT, prev_lines_ptr, 0);
 }
 
 int compressNoUni(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -202,7 +202,7 @@ int compressNoUni(const char *in, int len, char *out, int olen, char *previous_l
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_NO_UNI, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_NO_UNI, prev_lines_ptr, 0);
 }
 int decompressNoUni(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -211,7 +211,7 @@ int decompressNoUni(const char *in, int len, char *out, int olen, char *previous
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_NO_UNI, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_NO_UNI, prev_lines_ptr, 0);
 }
 
 int compressNoUniFavorText(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -221,7 +221,7 @@ int compressNoUniFavorText(const char *in, int len, char *out, int olen, char *p
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_NO_UNI_FAVOR_TEXT, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_NO_UNI_FAVOR_TEXT, prev_lines_ptr, 0);
 }
 int decompressNoUniFavorText(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -230,7 +230,7 @@ int decompressNoUniFavorText(const char *in, int len, char *out, int olen, char 
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_NO_UNI_FAVOR_TEXT, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_NO_UNI_FAVOR_TEXT, prev_lines_ptr, 0);
 }
 
 int compressURL(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -240,7 +240,7 @@ int compressURL(const char *in, int len, char *out, int olen, char *previous_lin
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_URL, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_URL, prev_lines_ptr, 0);
 }
 int decompressURL(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -249,7 +249,7 @@ int decompressURL(const char *in, int len, char *out, int olen, char *previous_l
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_URL, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_URL, prev_lines_ptr, 0);
 }
 
 int compressJSON(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -259,7 +259,7 @@ int compressJSON(const char *in, int len, char *out, int olen, char *previous_li
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_JSON, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_JSON, prev_lines_ptr, 0);
 }
 int decompressJSON(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -268,7 +268,7 @@ int decompressJSON(const char *in, int len, char *out, int olen, char *previous_
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_JSON, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_JSON, prev_lines_ptr, 0);
 }
 
 int compressJSONNoUni(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -278,7 +278,7 @@ int compressJSONNoUni(const char *in, int len, char *out, int olen, char *previo
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_JSON_NO_UNI, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_JSON_NO_UNI, prev_lines_ptr, 0);
 }
 int decompressJSONNoUni(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -287,7 +287,7 @@ int decompressJSONNoUni(const char *in, int len, char *out, int olen, char *prev
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_JSON_NO_UNI, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_JSON_NO_UNI, prev_lines_ptr, 0);
 }
 
 int compressXML(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -297,7 +297,7 @@ int compressXML(const char *in, int len, char *out, int olen, char *previous_lin
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_XML, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_XML, prev_lines_ptr, 0);
 }
 int decompressXML(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -306,7 +306,7 @@ int decompressXML(const char *in, int len, char *out, int olen, char *previous_l
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_XML, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_XML, prev_lines_ptr, 0);
 }
 
 int compressHTML(const char *in, int len, char *out, int olen, char *previous_line) {
@@ -316,7 +316,7 @@ int compressHTML(const char *in, int len, char *out, int olen, char *previous_li
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_compress_lines(in, len, out, olen, USX_PSET_HTML, prev_lines_ptr);
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_HTML, prev_lines_ptr, 0);
 }
 int decompressHTML(const char *in, int len, char *out, int olen, char *previous_line) {
 	struct us_lnk_lst prev_lines = {0};
@@ -325,7 +325,7 @@ int decompressHTML(const char *in, int len, char *out, int olen, char *previous_
 		prev_lines.data = previous_line;
 		prev_lines_ptr = &prev_lines;
 	}
-	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_HTML, prev_lines_ptr);
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_HTML, prev_lines_ptr, 0);
 }
 */
 import "C"

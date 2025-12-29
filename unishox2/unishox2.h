@@ -17,6 +17,8 @@
  *
  */
 
+ #include <stdint.h>
+
 /**
  * @file unishox2.h
  * @author Arundale Ramanathan, James Z. M. Gao
@@ -239,7 +241,7 @@ extern int unishox2_decompress(const char *restrict in, int len, UNISHOX_API_OUT
 extern int unishox2_compress_lines(const char * restrict in, int len, UNISHOX_API_OUT_AND_LEN(char * restrict out, int olen),
               const unsigned char usx_hcodes[], const unsigned char usx_hcode_lens[],
               const char *usx_freq_seq[], const char *usx_templates[],
-              struct us_lnk_lst * restrict prev_lines);
+              struct us_lnk_lst * restrict prev_lines, uint8_t skip_bits);
 /** 
  * More Comprehensive API for de-compressing array of strings \n
  * This function is not be used in conjuction with unishox2_compress_lines()
@@ -254,6 +256,6 @@ extern int unishox2_compress_lines(const char * restrict in, int len, UNISHOX_AP
 extern int unishox2_decompress_lines(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen),
               const unsigned char usx_hcodes[], const unsigned char usx_hcode_lens[],
               const char *usx_freq_seq[], const char *usx_templates[],
-              struct us_lnk_lst *restrict prev_lines);
+              struct us_lnk_lst *restrict prev_lines, uint8_t skip_bits);
 
 #endif
