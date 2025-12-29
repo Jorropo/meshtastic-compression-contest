@@ -143,7 +143,7 @@ func main() {
 		}),
 		"unishox2_meshtastic": compressorOnlyTextMessageAppContent(func(data []byte) []byte {
 			// copied from https://github.com/meshtastic/firmware/blob/3a7093a973c1b16d2d978576f1f880ed4c8d7386/src/mesh/Router.cpp#L570
-			compressedPayload, err := unishox2.CompressSimple(data)
+			compressedPayload, err := unishox2.CompressDefault(data, "")
 			if err != nil {
 				log.Fatalf("Compressing with unishox2: %v", err)
 			}

@@ -1,10 +1,29 @@
-// FIXME: This package is unsafe, it lacks bound check on output compression buffers.
 package unishox2
 
 /*
 #cgo CFLAGS: -I.
 #include "unishox2.h"
 #include <stdlib.h>
+
+int compressDefault(const char *in, int len, char *out, int olen, char *previous_line) {
+	struct us_lnk_lst prev_lines = {0};
+	struct us_lnk_lst *prev_lines_ptr = NULL;
+	if (previous_line != NULL) {
+		prev_lines.data = previous_line;
+		prev_lines_ptr = &prev_lines;
+	}
+	return unishox2_compress_lines(in, len, out, olen, USX_PSET_DFLT, prev_lines_ptr);
+}
+
+int decompressDefault(const char *in, int len, char *out, int olen, char *previous_line) {
+	struct us_lnk_lst prev_lines = {0};
+	struct us_lnk_lst *prev_lines_ptr = NULL;
+	if (previous_line != NULL) {
+		prev_lines.data = previous_line;
+		prev_lines_ptr = &prev_lines;
+	}
+	return unishox2_decompress_lines(in, len, out, olen, USX_PSET_DFLT, prev_lines_ptr);
+}
 */
 import "C"
 import (
@@ -12,20 +31,20 @@ import (
 	"unsafe"
 )
 
-// CompressSimple wraps unishox2_compress_simple.
-func CompressSimple(input []byte) ([]byte, error) {
-	if len(input) == 0 {
-		return []byte{}, nil
-	}
-
+func CompressDefault(input []byte, delta string) ([]byte, error) {
 	cIn := (*C.char)(unsafe.Pointer(unsafe.SliceData(input)))
 	cLen := C.int(len(input))
 
-	maxOutLen := 256 * 4
-	outBuf := make([]byte, maxOutLen)
+	var outBuf [256]byte
 	cOut := (*C.char)(unsafe.Pointer(&outBuf[0]))
+	cOLen := C.int(len(outBuf))
 
-	retLen := C.unishox2_compress_simple(cIn, cLen, cOut)
+	var cDelta *C.char
+	if len(delta) > 0 {
+		cDelta = C.CString(delta)
+	}
+
+	retLen := C.compressDefault(cIn, cLen, cOut, cOLen, cDelta)
 
 	if retLen < 0 {
 		return nil, errors.New("unishox2 compression failed")
@@ -34,23 +53,23 @@ func CompressSimple(input []byte) ([]byte, error) {
 	return outBuf[:retLen], nil
 }
 
-// DecompressSimple wraps unishox2_decompress_simple.
-func DecompressSimple(input []byte) ([]byte, error) {
-	if len(input) == 0 {
-		return []byte{}, nil
-	}
-
-	cIn := (*C.char)(unsafe.Pointer(&input[0]))
+func DecompressDefault(input []byte, delta string) ([]byte, error) {
+	cIn := (*C.char)(unsafe.Pointer(unsafe.SliceData(input)))
 	cLen := C.int(len(input))
 
-	maxOutLen := 256 * 4
-	outBuf := make([]byte, maxOutLen)
+	var outBuf [256]byte
 	cOut := (*C.char)(unsafe.Pointer(&outBuf[0]))
+	cOLen := C.int(len(outBuf))
 
-	retLen := C.unishox2_decompress_simple(cIn, cLen, cOut)
+	var cDelta *C.char
+	if len(delta) > 0 {
+		cDelta = C.CString(delta)
+	}
+
+	retLen := C.decompressDefault(cIn, cLen, cOut, cOLen, cDelta)
 
 	if retLen < 0 {
-		return nil, errors.New("unishox2 decompression failed (buffer too small or corrupt data)")
+		return nil, errors.New("unishox2 decompression failed")
 	}
 
 	return outBuf[:retLen], nil
