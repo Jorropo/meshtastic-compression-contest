@@ -48,6 +48,8 @@
 #define UNISHOX_MAGIC_BITS 0xFF
 #endif
 
+#define UNISHOX_MAGIC_BIT_LEN 0
+
 /// Desired length of Magic bits defined by UNISHOX_MAGIC_BITS
 #ifdef UNISHOX_MAGIC_BIT_LEN
 #if UNISHOX_MAGIC_BIT_LEN < 0 || 9 <= UNISHOX_MAGIC_BIT_LEN

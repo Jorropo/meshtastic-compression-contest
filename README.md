@@ -9,9 +9,9 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
 |------------|--------------------------------------------------------------|
-| `unishox2_meshtastic` | 0.7553 |
+| `unishox2_meshtastic` | 0.7542 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.7606 |
-| `snowflake_Jorropo` | 0.7755 |
+| `snowflake_Jorropo` | 0.7747 |
 | `smaz_cespare_Jorropo` | 0.7998 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.8351 |
 | `shoco_TextEn_tmthrgd` | 0.8419 |
@@ -38,7 +38,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
-| `snowflake_Jorropo` | 0.8064 |
+| `snowflake_Jorropo` | 0.8054 |
 | `unishox2_meshtastic` | 0.9986 |
 | `shoco_TextEn_tmthrgd_Jorropo` | 0.9987 |
 | `smaz_cespare_Jorropo` | 0.9989 |
