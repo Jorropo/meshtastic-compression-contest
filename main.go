@@ -57,6 +57,7 @@ type compressionInput struct {
 type compressor = func(compressionInput) []byte
 
 const generateTrainingDataset = false
+const skipAllUnishoxPermutations = true
 
 func main() {
 	compressors := map[string]compressor{
@@ -225,6 +226,10 @@ func main() {
 		{"html", unishox2.CompressHTML},
 	}
 	for set := range pow2AllSetsAndAllAllSets(unishox) {
+		if skipAllUnishoxPermutations && len(set) > 1 {
+			continue
+		}
+
 		var nameParts []string
 		var compFuncs []func([]byte, []byte, string, uint8) int
 		for _, unishox := range set {
