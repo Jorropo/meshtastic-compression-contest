@@ -518,7 +518,7 @@ int append_final_bits(char *const out, const int olen, int ol, const uint8_t sta
 } while (0)
 
 // Main API function. See unishox2.h for documentation
-int unishox2_compress_lines(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[], struct us_lnk_lst *prev_lines) {
+int unishox2_compress_lines(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[], struct us_lnk_lst *restrict prev_lines) {
 
   uint8_t state;
 
@@ -851,7 +851,7 @@ int unishox2_compress_lines(const char *in, int len, UNISHOX_API_OUT_AND_LEN(cha
 }
 
 // Main API function. See unishox2.h for documentation
-int unishox2_compress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[]) {
+int unishox2_compress(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[]) {
   return unishox2_compress_lines(in, len, UNISHOX_API_OUT_AND_LEN(out, olen), usx_hcodes, usx_hcode_lens, usx_freq_seq, usx_templates, NULL);
 }
 
@@ -1096,7 +1096,7 @@ char getHexChar(int32_t nibble, int hex_type) {
 }
 
 // Main API function. See unishox2.h for documentation
-int unishox2_decompress_lines(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[], struct us_lnk_lst *prev_lines) {
+int unishox2_decompress_lines(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[], struct us_lnk_lst *restrict prev_lines) {
 
   int dstate;
   int bit_no;
@@ -1370,6 +1370,6 @@ int unishox2_decompress_lines(const char *in, int len, UNISHOX_API_OUT_AND_LEN(c
 }
 
 // Main API function. See unishox2.h for documentation
-int unishox2_decompress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[]) {
+int unishox2_decompress(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen), const uint8_t usx_hcodes[], const uint8_t usx_hcode_lens[], const char *usx_freq_seq[], const char *usx_templates[]) {
   return unishox2_decompress_lines(in, len, UNISHOX_API_OUT_AND_LEN(out, olen), usx_hcodes, usx_hcode_lens, usx_freq_seq, usx_templates, NULL);
 }

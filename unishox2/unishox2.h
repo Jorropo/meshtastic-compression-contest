@@ -204,7 +204,7 @@ struct us_lnk_lst {
  * @param[in] usx_freq_seq   Frequently occuring sequences. See USX_FREQ_SEQ_* macros for samples
  * @param[in] usx_templates  Templates of frequently occuring patterns. See USX_TEMPLATES macro.
  */
-extern int unishox2_compress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen),
+extern int unishox2_compress(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen),
               const unsigned char usx_hcodes[], const unsigned char usx_hcode_lens[],
               const char *usx_freq_seq[], const char *usx_templates[]);
 /** 
@@ -223,7 +223,7 @@ extern int unishox2_compress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(ch
  * @param[in] usx_freq_seq   Frequently occuring sequences. See USX_FREQ_SEQ_* macros for samples
  * @param[in] usx_templates  Templates of frequently occuring patterns. See USX_TEMPLATES macro.
  */
-extern int unishox2_decompress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen),
+extern int unishox2_decompress(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen),
               const unsigned char usx_hcodes[], const unsigned char usx_hcode_lens[],
               const char *usx_freq_seq[], const char *usx_templates[]);
 /** 
@@ -236,10 +236,10 @@ extern int unishox2_decompress(const char *in, int len, UNISHOX_API_OUT_AND_LEN(
  * and stored in a compressed array of bytes for use as a constant in other programs \n
  * where each element of the array can be decompressed and used at runtime.
  */
-extern int unishox2_compress_lines(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen),
+extern int unishox2_compress_lines(const char * restrict in, int len, UNISHOX_API_OUT_AND_LEN(char * restrict out, int olen),
               const unsigned char usx_hcodes[], const unsigned char usx_hcode_lens[],
               const char *usx_freq_seq[], const char *usx_templates[],
-              struct us_lnk_lst *prev_lines);
+              struct us_lnk_lst * restrict prev_lines);
 /** 
  * More Comprehensive API for de-compressing array of strings \n
  * This function is not be used in conjuction with unishox2_compress_lines()
@@ -251,9 +251,9 @@ extern int unishox2_compress_lines(const char *in, int len, UNISHOX_API_OUT_AND_
  * routine which takes this compressed array as parameter and index to be \n
  * decompressed.
  */
-extern int unishox2_decompress_lines(const char *in, int len, UNISHOX_API_OUT_AND_LEN(char *out, int olen),
+extern int unishox2_decompress_lines(const char *restrict in, int len, UNISHOX_API_OUT_AND_LEN(char *restrict out, int olen),
               const unsigned char usx_hcodes[], const unsigned char usx_hcode_lens[],
               const char *usx_freq_seq[], const char *usx_templates[],
-              struct us_lnk_lst *prev_lines);
+              struct us_lnk_lst *restrict prev_lines);
 
 #endif
