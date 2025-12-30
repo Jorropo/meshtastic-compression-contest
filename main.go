@@ -46,6 +46,11 @@ import (
 	klauspost_zlib "github.com/klauspost/compress/zlib"
 	"github.com/pierrec/lz4/v4"
 	shoco_models "github.com/tmthrgd/shoco/models"
+
+	meshtastic_pb "github.com/egonelbre/exp-protobuf-compression/meshtastic"
+	"github.com/egonelbre/exp-protobuf-compression/meshtasticmodel"
+
+	"google.golang.org/protobuf/proto"
 )
 
 const zeroRatio = 2
@@ -259,6 +264,24 @@ func main() {
 			}
 
 			return output[:outputLen]
+		})
+	}
+
+	for _, v := range meshtasticmodel.Versions {
+		name := "meshtasticmodel_" + v.Name + "_EgonElbre"
+		compressors[name] = compressJustBytes(func(data []byte) []byte {
+			var packet meshtastic_pb.Data
+			err := proto.Unmarshal(data, &packet)
+			if err != nil {
+				log.Fatalf("Unmarshaling MeshPacket: %v", err)
+			}
+
+			var b bytes.Buffer
+			err = v.Compress(&packet, &b)
+			if err != nil {
+				log.Fatalf("Compressing with meshtasticmodel %s: %v", v.Name, err)
+			}
+			return b.Bytes()
 		})
 	}
 

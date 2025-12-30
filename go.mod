@@ -1,10 +1,11 @@
 module github.com/Jorropo/meshtastic-compression-contest
 
-go 1.24.0
+go 1.25
 
 require (
 	github.com/cespare/go-smaz v1.0.0
 	github.com/cloudflare/golz4 v0.0.0-20240916140612-caecf3c00c06
+	github.com/egonelbre/exp-protobuf-compression v0.0.0-00010101000000-000000000000
 	github.com/inkyblackness/res v0.0.0-20180728072643-e78e2ff1969d
 	github.com/klauspost/compress v1.18.2
 	github.com/pierrec/lz4/v4 v4.1.23
@@ -37,3 +38,5 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
+
+replace github.com/egonelbre/exp-protobuf-compression => github.com/Jorropo/exp-protobuf-compression v0.0.0-20251230095524-70f04914e5b9 // https://github.com/egonelbre/exp-protobuf-compression/pull/1

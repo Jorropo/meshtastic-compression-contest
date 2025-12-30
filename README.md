@@ -10,6 +10,15 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | Compressor | Average Reciprocal Compression Ratio (TEXT_MESSAGE_APP only) |
 |------------|--------------------------------------------------------------|
 | `unishox2_alpha_only` | 0.6976 |
+| `meshtasticmodel_V1_EgonElbre` | 0.7154 |
+| `meshtasticmodel_V4_EgonElbre` | 0.7154 |
+| `meshtasticmodel_V5_EgonElbre` | 0.7154 |
+| `meshtasticmodel_V6_EgonElbre` | 0.7154 |
+| `meshtasticmodel_V10_EgonElbre` | 0.7158 |
+| `meshtasticmodel_V8_EgonElbre` | 0.7158 |
+| `meshtasticmodel_V9_EgonElbre` | 0.7158 |
+| `meshtasticmodel_V7_EgonElbre` | 0.7173 |
+| `meshtasticmodel_V3_EgonElbre` | 0.7188 |
 | `snowflake_Jorropo` | 0.7196 |
 | `unishox2_alpha_num_only` | 0.7325 |
 | `unishox2_favor_alpha` | 0.7432 |
@@ -29,12 +38,19 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `unishox2_favor_umlaut` | 0.7618 |
 | `unishox2_no_dict` | 0.7622 |
 | `smaz_cespare_Jorropo` | 0.7998 |
+| `meshtasticmodel_V2_EgonElbre` | 0.8108 |
 | `shoco_WordsEn_tmthrgd_Jorropo` | 0.8351 |
 | `shoco_TextEn_tmthrgd` | 0.8419 |
 | `shoco_FilePath_tmthrgd_Jorropo` | 0.8678 |
 | `shoco_Emails_tmthrgd_Jorropo` | 0.8750 |
 | `smaz_cespare` | 0.8807 |
 | `shoco_WordsEn_tmthrgd` | 0.9160 |
+| `meshtasticmodel_pbmodel-o1_EgonElbre` | 0.9328 |
+| `meshtasticmodel_pbmodel-o2_EgonElbre` | 0.9328 |
+| `meshtasticmodel_pbmodel-varint-o1_EgonElbre` | 0.9328 |
+| `meshtasticmodel_pbmodel-varint-o2_EgonElbre` | 0.9328 |
+| `meshtasticmodel_pbmodel-varint_EgonElbre` | 0.9328 |
+| `meshtasticmodel_pbmodel_EgonElbre` | 0.9328 |
 | `shoco_FilePath_tmthrgd` | 0.9487 |
 | `shoco_Emails_tmthrgd` | 0.9559 |
 | `noop` | 1.0000 |
@@ -55,6 +71,21 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | Compressor | Average Reciprocal Compression Ratio |
 |------------|--------------------------------------|
 | `snowflake_Jorropo` | 0.7837 |
+| `meshtasticmodel_pbmodel-o1_EgonElbre` | 0.9541 |
+| `meshtasticmodel_pbmodel-o2_EgonElbre` | 0.9541 |
+| `meshtasticmodel_pbmodel_EgonElbre` | 0.9541 |
+| `meshtasticmodel_pbmodel-varint-o1_EgonElbre` | 0.9541 |
+| `meshtasticmodel_pbmodel-varint-o2_EgonElbre` | 0.9541 |
+| `meshtasticmodel_pbmodel-varint_EgonElbre` | 0.9541 |
+| `meshtasticmodel_V1_EgonElbre` | 0.9564 |
+| `meshtasticmodel_V4_EgonElbre` | 0.9564 |
+| `meshtasticmodel_V5_EgonElbre` | 0.9564 |
+| `meshtasticmodel_V6_EgonElbre` | 0.9564 |
+| `meshtasticmodel_V10_EgonElbre` | 0.9580 |
+| `meshtasticmodel_V8_EgonElbre` | 0.9580 |
+| `meshtasticmodel_V9_EgonElbre` | 0.9580 |
+| `meshtasticmodel_V7_EgonElbre` | 0.9583 |
+| `meshtasticmodel_V3_EgonElbre` | 0.9610 |
 | `unishox2_alpha_only` | 0.9983 |
 | `unishox2_alpha_num_only` | 0.9985 |
 | `unishox2_favor_alpha` | 0.9986 |
@@ -78,6 +109,7 @@ One **bellow** 1 means the compressed data is **smaller** than the uncompressed 
 | `shoco_FilePath_tmthrgd_Jorropo` | 0.9993 |
 | `shoco_Emails_tmthrgd_Jorropo` | 0.9993 |
 | `noop` | 1.0000 |
+| `meshtasticmodel_V2_EgonElbre` | 1.0147 |
 | `lz4_cloudflareHC` | 1.0340 |
 | `lz4_cloudflare` | 1.0344 |
 | `flate_klauspost` | 1.0660 |
@@ -106,6 +138,96 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![snowflake_Jorropo only TEXT_MESSAGE_APP CDF](graphs/snowflake_Jorropo_only_TEXT_MESSAGE_APP_cdf.png)
 
 ![snowflake_Jorropo CDF](graphs/snowflake_Jorropo_cdf.png)
+
+### `meshtasticmodel_pbmodel-o1_EgonElbre`
+
+![meshtasticmodel_pbmodel-o1_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_pbmodel-o1_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_pbmodel-o1_EgonElbre CDF](graphs/meshtasticmodel_pbmodel-o1_EgonElbre_cdf.png)
+
+### `meshtasticmodel_pbmodel-o2_EgonElbre`
+
+![meshtasticmodel_pbmodel-o2_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_pbmodel-o2_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_pbmodel-o2_EgonElbre CDF](graphs/meshtasticmodel_pbmodel-o2_EgonElbre_cdf.png)
+
+### `meshtasticmodel_pbmodel_EgonElbre`
+
+![meshtasticmodel_pbmodel_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_pbmodel_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_pbmodel_EgonElbre CDF](graphs/meshtasticmodel_pbmodel_EgonElbre_cdf.png)
+
+### `meshtasticmodel_pbmodel-varint-o1_EgonElbre`
+
+![meshtasticmodel_pbmodel-varint-o1_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_pbmodel-varint-o1_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_pbmodel-varint-o1_EgonElbre CDF](graphs/meshtasticmodel_pbmodel-varint-o1_EgonElbre_cdf.png)
+
+### `meshtasticmodel_pbmodel-varint-o2_EgonElbre`
+
+![meshtasticmodel_pbmodel-varint-o2_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_pbmodel-varint-o2_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_pbmodel-varint-o2_EgonElbre CDF](graphs/meshtasticmodel_pbmodel-varint-o2_EgonElbre_cdf.png)
+
+### `meshtasticmodel_pbmodel-varint_EgonElbre`
+
+![meshtasticmodel_pbmodel-varint_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_pbmodel-varint_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_pbmodel-varint_EgonElbre CDF](graphs/meshtasticmodel_pbmodel-varint_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V1_EgonElbre`
+
+![meshtasticmodel_V1_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V1_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V1_EgonElbre CDF](graphs/meshtasticmodel_V1_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V4_EgonElbre`
+
+![meshtasticmodel_V4_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V4_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V4_EgonElbre CDF](graphs/meshtasticmodel_V4_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V5_EgonElbre`
+
+![meshtasticmodel_V5_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V5_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V5_EgonElbre CDF](graphs/meshtasticmodel_V5_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V6_EgonElbre`
+
+![meshtasticmodel_V6_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V6_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V6_EgonElbre CDF](graphs/meshtasticmodel_V6_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V10_EgonElbre`
+
+![meshtasticmodel_V10_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V10_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V10_EgonElbre CDF](graphs/meshtasticmodel_V10_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V8_EgonElbre`
+
+![meshtasticmodel_V8_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V8_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V8_EgonElbre CDF](graphs/meshtasticmodel_V8_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V9_EgonElbre`
+
+![meshtasticmodel_V9_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V9_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V9_EgonElbre CDF](graphs/meshtasticmodel_V9_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V7_EgonElbre`
+
+![meshtasticmodel_V7_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V7_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V7_EgonElbre CDF](graphs/meshtasticmodel_V7_EgonElbre_cdf.png)
+
+### `meshtasticmodel_V3_EgonElbre`
+
+![meshtasticmodel_V3_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V3_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V3_EgonElbre CDF](graphs/meshtasticmodel_V3_EgonElbre_cdf.png)
 
 ### `unishox2_alpha_only`
 
@@ -244,6 +366,12 @@ The following graphs show the cumulative distribution function (CDF) of the reci
 ![noop only TEXT_MESSAGE_APP CDF](graphs/noop_only_TEXT_MESSAGE_APP_cdf.png)
 
 ![noop CDF](graphs/noop_cdf.png)
+
+### `meshtasticmodel_V2_EgonElbre`
+
+![meshtasticmodel_V2_EgonElbre only TEXT_MESSAGE_APP CDF](graphs/meshtasticmodel_V2_EgonElbre_only_TEXT_MESSAGE_APP_cdf.png)
+
+![meshtasticmodel_V2_EgonElbre CDF](graphs/meshtasticmodel_V2_EgonElbre_cdf.png)
 
 ### `lz4_cloudflareHC`
 
